@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<idPkg:Story xmlns:idPkg="http://ns.adobe.com/AdobeInDesign/idml/1.0/packaging" DOMVersion="19.0">
+	<Story Self="u7217" UserText="true" IsEndnoteStory="false" AppliedTOCStyle="n" TrackChanges="false" StoryTitle="$ID/" AppliedNamedGrid="n">
+		<StoryPreference OpticalMarginAlignment="false" OpticalMarginSize="12" FrameType="TextFrameType" StoryOrientation="Horizontal" StoryDirection="LeftToRightDirection" />
+		<LinkedStoryOption UpdateWhileSaving="false" WarnOnUpdateOfEditedStory="true" RemoveForcedLineBreaks="false" ApplyStyleMappings="true" />
+		<InCopyExportOption IncludeGraphicProxies="true" IncludeAllResources="false" />
+		<ParaStyleMapping Self="u7217ParaStyleMapping0" SourceStyleName="A4 V:*" DestinationStyleName="A4 H:*" MappingRuleType="GroupMappingRule" />
+		<ParaStyleMapping Self="u7217ParaStyleMapping1" SourceStyleName="[Basic Paragraph]" DestinationStyleName="A4 H:*" MappingRuleType="StyleToGroupMappingRule" />
+		<CharStyleMapping Self="u7217CharStyleMapping0" SourceStyleName="A4 V:*" DestinationStyleName="A4 H:*" MappingRuleType="GroupMappingRule" />
+		<Link Self="u74a6" AssetURL="$ID/" AssetID="$ID/" LinkResourceURI="idinternalcontent:17097" LinkResourceFormat="$ID/Internal Linked Story" StoredState="Contained" LinkClassID="138499" LinkClientID="257" LinkResourceModified="false" LinkObjectModified="false" ShowInUI="true" CanEmbed="true" CanUnembed="true" CanPackage="true" ImportPolicy="NoAutoImport" ExportPolicy="NoAutoExport" LinkImportStamp="2125677016" LinkImportModificationTime="2025-12-09T20:48:27" LinkImportTime="2025-12-10T00:02:17" LinkResourceSize="0~0" RenditionData="Actual" />
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/A4 H%3aArial Narrow" Justification="RightAlign">
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="8" AppliedLanguage="$ID/English: USA">
+				<Properties>
+					<Leading type="unit">7</Leading>
+					<AppliedFont type="string">Gill Sans MT Condensed</AppliedFont>
+				</Properties>
+				<Content>Dec 2025 VOL 51(4)</Content>
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+	</Story>
+</idPkg:Story>

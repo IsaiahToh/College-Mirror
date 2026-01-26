@@ -70,8 +70,15 @@ class VerticalPosition(Enum):
 class ContentType(Enum):
     """
     The semantic type of a content block parsed from Word documents.
+    
+    Parsing Rules:
+    - TITLE: Bold + underlined text at the top of the document
+    - SUBHEADER: Bold text (not underlined) after the title
+    - QUOTE: Quote paragraph (detected via rules/patterns)
+    - BODY: Regular body paragraph
     """
-    TITLE = auto()      # Section title (first paragraph)
+    TITLE = auto()      # Section title (bold + underlined)
+    SUBHEADER = auto()  # Subheader (bold only, not underlined)
     BODY = auto()       # Body paragraph
     QUOTE = auto()      # Quote paragraph (detected via rules)
 

@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<idPkg:Story xmlns:idPkg="http://ns.adobe.com/AdobeInDesign/idml/1.0/packaging" DOMVersion="19.0">
+	<Story Self="u10992" UserText="true" IsEndnoteStory="false" AppliedTOCStyle="n" TrackChanges="false" StoryTitle="$ID/" AppliedNamedGrid="n">
+		<StoryPreference OpticalMarginAlignment="false" OpticalMarginSize="12" FrameType="TextFrameType" StoryOrientation="Horizontal" StoryDirection="LeftToRightDirection" />
+		<InCopyExportOption IncludeGraphicProxies="true" IncludeAllResources="false" />
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/$ID/[No paragraph style]" HyphenateLadderLimit="0" MaximumWordSpacing="150" MinimumWordSpacing="75" MaximumLetterSpacing="25" MinimumLetterSpacing="-5" KeepFirstLines="1" KeepLastLines="1" RuleAboveTint="100" RuleBelowTint="100" Justification="RightAlign" DropcapDetail="0" TreatIdeographicSpaceAsSpace="false">
+			<Properties>
+				<RuleAboveColor type="object">Color/Black</RuleAboveColor>
+				<RuleBelowColor type="object">Color/Black</RuleBelowColor>
+			</Properties>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" Capitalization="AllCaps" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>Editorial Board</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/$ID/[No paragraph style]" HyphenateLadderLimit="0" SpaceAfter="5.669291338582678" MaximumWordSpacing="150" MinimumWordSpacing="75" MaximumLetterSpacing="25" MinimumLetterSpacing="-5" KeepFirstLines="1" KeepLastLines="1" RuleAboveTint="100" RuleBelowTint="100" Justification="RightAlign" DropcapDetail="0" TreatIdeographicSpaceAsSpace="false">
+			<Properties>
+				<RuleAboveColor type="object">Color/Black</RuleAboveColor>
+				<RuleBelowColor type="object">Color/Black</RuleBelowColor>
+			</Properties>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" Capitalization="AllCaps" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>The College Mirror</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" Capitalization="AllCaps" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>CHIEF Editor</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="7" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content> Cl Asst Prof Low Sher Guan Luke</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" Capitalization="AllCaps" AppliedLanguage="$ID/English: USA" Underline="true" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+					<UnderlineColor type="object">Color/Black</UnderlineColor>
+				</Properties>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/$ID/[No paragraph style]" HyphenateLadderLimit="0" MaximumWordSpacing="150" MinimumWordSpacing="75" MaximumLetterSpacing="25" MinimumLetterSpacing="-5" KeepFirstLines="1" KeepLastLines="1" RuleAboveTint="100" RuleBelowTint="100" Justification="RightAlign" DropcapDetail="0" TreatIdeographicSpaceAsSpace="false">
+			<Properties>
+				<RuleAboveColor type="object">Color/Black</RuleAboveColor>
+				<RuleBelowColor type="object">Color/Black</RuleBelowColor>
+			</Properties>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" Capitalization="AllCaps" AppliedLanguage="$ID/English: USA" Underline="true" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+					<UnderlineColor type="object">Color/Black</UnderlineColor>
+				</Properties>
+				<Content>TEAM A</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" Capitalization="AllCaps" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Br />
+				<Content>Editor</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="7" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>Dr Fok Wai Yee Rose</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" Capitalization="AllCaps" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">10</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>Members</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">10</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/$ID/[No paragraph style]" HyphenateLadderLimit="0" SpaceAfter="5.669291338582678" MaximumWordSpacing="150" MinimumWordSpacing="75" MaximumLetterSpacing="25" MinimumLetterSpacing="-5" KeepFirstLines="1" KeepLastLines="1" RuleAboveTint="100" RuleBelowTint="100" Justification="RightAlign" DropcapDetail="0" TreatIdeographicSpaceAsSpace="false">
+			<Properties>
+				<RuleAboveColor type="object">Color/Black</RuleAboveColor>
+				<RuleBelowColor type="object">Color/Black</RuleBelowColor>
+			</Properties>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="7" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>Dr Ng Chee Lian Lawrence Dr Tan Eng Chun Dr Tan Li Wen Terence</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" Capitalization="AllCaps" AppliedLanguage="$ID/English: USA" Underline="true" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+					<UnderlineColor type="object">Color/Black</UnderlineColor>
+				</Properties>
+				<Content>TEAM B                                            </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" Capitalization="AllCaps" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>Editor </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>                                  </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="7" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>Dr Lim Khong Jin Michael </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" Capitalization="AllCaps" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">10</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>Members </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="7" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>Dr Aziz Noordin Dr Cheah Ming Hann Dr Ding Si Yan Dr Hong Yinghui Lois Dr Koh Jan Ming Ian Dr Low Cheng Hong Charity Dr Lye Tong Fong Alfred Dr Ng Li Ling Dr Tan Kee Tung  </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" Capitalization="AllCaps" AppliedLanguage="$ID/English: USA" Underline="true" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">6</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+					<UnderlineColor type="object">Color/Black</UnderlineColor>
+				</Properties>
+				<Content>TEAM C</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" Capitalization="AllCaps" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">6</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content> </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" Capitalization="AllCaps" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>Editor</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content> </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="7" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>Dr Yee Wen Jun Gabriel Gerard  </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" Capitalization="AllCaps" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">10</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>Members</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="7" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">10</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content> </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="7" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>Dr Chan Hian Hui Vincent Cl Asst Prof Low Sher Guan Luke Dr Yuen Sok Wei Julia</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/$ID/[No paragraph style]" HyphenateLadderLimit="0" MaximumWordSpacing="150" MinimumWordSpacing="75" MaximumLetterSpacing="25" MinimumLetterSpacing="-5" KeepFirstLines="1" KeepLastLines="1" RuleAboveTint="100" RuleBelowTint="100" Justification="RightAlign" DropcapDetail="0" TreatIdeographicSpaceAsSpace="false">
+			<Properties>
+				<RuleAboveColor type="object">Color/Black</RuleAboveColor>
+				<RuleBelowColor type="object">Color/Black</RuleBelowColor>
+			</Properties>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" Capitalization="AllCaps" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>Advisors</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="7" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content> A/Prof Goh Lee Gan Dr Wee Wei Chieh Nelson</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/$ID/[No paragraph style]" HyphenateLadderLimit="0" SpaceAfter="5.669291338582678" MaximumWordSpacing="150" MinimumWordSpacing="75" MaximumLetterSpacing="25" MinimumLetterSpacing="-5" KeepFirstLines="1" KeepLastLines="1" RuleAboveTint="100" RuleBelowTint="100" Justification="RightAlign" DropcapDetail="0" TreatIdeographicSpaceAsSpace="false">
+			<Properties>
+				<RuleAboveColor type="object">Color/Black</RuleAboveColor>
+				<RuleBelowColor type="object">Color/Black</RuleBelowColor>
+			</Properties>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="7" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>Dr Chua Lee Lea Im Elaine Dr S Suraj Kumar Dr Wong Tien Hua</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/$ID/[No paragraph style]" HyphenateLadderLimit="0" MaximumWordSpacing="150" MinimumWordSpacing="75" MaximumLetterSpacing="25" MinimumLetterSpacing="-5" KeepFirstLines="1" KeepLastLines="1" RuleAboveTint="100" RuleBelowTint="100" Justification="RightAlign" DropcapDetail="0" TreatIdeographicSpaceAsSpace="false">
+			<Properties>
+				<RuleAboveColor type="object">Color/Black</RuleAboveColor>
+				<RuleBelowColor type="object">Color/Black</RuleBelowColor>
+			</Properties>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" Capitalization="AllCaps" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>MANAGER</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="7" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/$ID/[No paragraph style]" HyphenateLadderLimit="0" SpaceAfter="8.503937007874017" MaximumWordSpacing="150" MinimumWordSpacing="75" MaximumLetterSpacing="25" MinimumLetterSpacing="-5" KeepFirstLines="1" KeepLastLines="1" RuleAboveTint="100" RuleBelowTint="100" Justification="RightAlign" DropcapDetail="0" TreatIdeographicSpaceAsSpace="false">
+			<Properties>
+				<RuleAboveColor type="object">Color/Black</RuleAboveColor>
+				<RuleBelowColor type="object">Color/Black</RuleBelowColor>
+			</Properties>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="7" AppliedLanguage="$ID/English: USA" FillTint="95" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>Ms Patricia Cheok</Content>
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+	</Story>
+</idPkg:Story>

@@ -6,13 +6,14 @@ This module handles parsing of Word documents (.docx) to extract
 structured content blocks for layout assignment.
 
 Word Document Structure (Expected):
-- First paragraph = Section title
+- First bolded+underlined paragraph = Page header (title)
+- Subsequent bolded paragraphs = Subheaders
 - Remaining paragraphs = Body text
 - Quote paragraphs identified by specific rules
 
 The parser produces ContentSection objects that contain:
 - Title ContentBlock
-- Body ContentBlocks (paragraphs and quotes)
+- Body ContentBlocks (paragraphs, subheaders, and quotes)
 - Associated image paths
 
 Dependencies:
@@ -39,11 +40,13 @@ import hashlib
 try:
     from docx import Document as DocxDocument
     from docx.text.paragraph import Paragraph
+    from docx.text.run import Run
     HAS_DOCX = True
 except ImportError:
     HAS_DOCX = False
     DocxDocument = None
     Paragraph = None
+    Run = None
 
 from .models import (
     ContentBlock,
@@ -59,52 +62,35 @@ logger = logging.getLogger(__name__)
 # Quote Detection Configuration
 # =============================================================================
 
-# ============================================================================
-# TODO: [INSERT FINAL QUOTE DETECTION RULE HERE]
-# The following rules determine how quote paragraphs are identified.
-# Update these based on your actual document conventions.
-# ============================================================================
+# Quote detection from document content is disabled.
+# Quotes are specified via the UI's quote count feature, which generates
+# placeholder "Sample quote" text for each quote slot requested.
 
 @dataclass
 class QuoteDetectionConfig:
     """
     Configuration for detecting quote paragraphs.
     
-    Quotes can be identified by:
-    1. Style names (e.g., "Quote", "Pull Quote")
-    2. Prefix patterns (e.g., starting with "> " or '"')
-    3. Length heuristics (e.g., short paragraphs between 20-200 chars)
-    4. Special markers (e.g., [QUOTE] prefix)
+    NOTE: Quote detection from document content is disabled by default.
+    Quotes are now specified via the UI's quote count feature instead.
     
-    Set the appropriate detection methods for your documents.
+    This config is kept for backwards compatibility but the detection
+    methods are intentionally left empty.
     """
     
-    # Style-based detection
-    quote_style_names: List[str] = field(default_factory=lambda: [
-        # TODO: Add your quote style names
-        # "Quote",
-        # "PullQuote", 
-        # "Blockquote",
-    ])
+    # Style-based detection (disabled)
+    quote_style_names: List[str] = field(default_factory=list)
     
-    # Prefix-based detection
-    quote_prefix_patterns: List[str] = field(default_factory=lambda: [
-        # TODO: Add your quote prefix patterns
-        # r'^>\s+',           # Markdown-style quote
-        # r'^"\s*',           # Starts with quote mark
-        # r'^\[QUOTE\]\s*',   # Tagged quote
-    ])
+    # Prefix-based detection (disabled)
+    quote_prefix_patterns: List[str] = field(default_factory=list)
     
-    # Length-based detection (use with caution)
+    # Length-based detection (disabled)
     use_length_heuristic: bool = False
     min_quote_length: int = 20
     max_quote_length: int = 200
     
-    # Special markers
-    quote_markers: List[str] = field(default_factory=lambda: [
-        # "[QUOTE]",
-        # "—",  # Em-dash often indicates attribution
-    ])
+    # Special markers (disabled)
+    quote_markers: List[str] = field(default_factory=list)
     
     def matches_quote_style(self, style_name: Optional[str]) -> bool:
         """Check if a paragraph style indicates a quote."""
@@ -150,7 +136,8 @@ class ContentParser:
     Parser for extracting structured content from Word documents.
     
     Each .docx file is treated as one content section:
-    - First paragraph = Title
+    - First bolded+underlined paragraph = Title (page header)
+    - Subsequent bolded paragraphs = Subheaders
     - Remaining paragraphs = Body (with quote detection)
     
     Usage:
@@ -187,6 +174,105 @@ class ContentParser:
         self.quote_config = quote_config or DEFAULT_QUOTE_CONFIG
         self.strip_whitespace = strip_whitespace
         self.skip_empty_paragraphs = skip_empty_paragraphs
+    
+    # =========================================================================
+    # Formatting Detection Methods
+    # =========================================================================
+    
+    def _is_paragraph_bold(self, paragraph: "Paragraph") -> bool:
+        """
+        Check if a paragraph is bold.
+        
+        A paragraph is considered bold if ALL of its runs are bold,
+        or if the majority of text content is in bold runs.
+        
+        Args:
+            paragraph: python-docx Paragraph object
+            
+        Returns:
+            True if paragraph is bold
+        """
+        if not paragraph.runs:
+            return False
+        
+        total_chars = 0
+        bold_chars = 0
+        
+        for run in paragraph.runs:
+            text_len = len(run.text.strip())
+            if text_len == 0:
+                continue
+            total_chars += text_len
+            if run.bold:
+                bold_chars += text_len
+        
+        if total_chars == 0:
+            return False
+        
+        # Consider bold if more than 80% of text is bold
+        return (bold_chars / total_chars) >= 0.8
+    
+    def _is_paragraph_underlined(self, paragraph: "Paragraph") -> bool:
+        """
+        Check if a paragraph is underlined.
+        
+        A paragraph is considered underlined if ALL of its runs are underlined,
+        or if the majority of text content is underlined.
+        
+        Args:
+            paragraph: python-docx Paragraph object
+            
+        Returns:
+            True if paragraph is underlined
+        """
+        if not paragraph.runs:
+            return False
+        
+        total_chars = 0
+        underlined_chars = 0
+        
+        for run in paragraph.runs:
+            text_len = len(run.text.strip())
+            if text_len == 0:
+                continue
+            total_chars += text_len
+            # run.underline can be True, False, or a specific underline style
+            if run.underline:
+                underlined_chars += text_len
+        
+        if total_chars == 0:
+            return False
+        
+        # Consider underlined if more than 80% of text is underlined
+        return (underlined_chars / total_chars) >= 0.8
+    
+    def _is_header(self, paragraph: "Paragraph") -> bool:
+        """
+        Check if a paragraph is a header/title (bold AND underlined).
+        
+        Args:
+            paragraph: python-docx Paragraph object
+            
+        Returns:
+            True if paragraph is both bold and underlined
+        """
+        return self._is_paragraph_bold(paragraph) and self._is_paragraph_underlined(paragraph)
+    
+    def _is_subheader(self, paragraph: "Paragraph") -> bool:
+        """
+        Check if a paragraph is a subheader (bold but NOT underlined).
+        
+        Args:
+            paragraph: python-docx Paragraph object
+            
+        Returns:
+            True if paragraph is bold but not underlined
+        """
+        return self._is_paragraph_bold(paragraph) and not self._is_paragraph_underlined(paragraph)
+    
+    # =========================================================================
+    # Document Parsing Methods
+    # =========================================================================
     
     def parse_documents(
         self,
@@ -255,8 +341,32 @@ class ContentParser:
         # Generate section ID
         section_id = f"section_{doc_index}_{self._generate_id(docx_path)}"
         
-        # First paragraph is the title
-        title_para = paragraphs[0]
+        # Find the title (first bold+underlined paragraph at the top)
+        title_para = None
+        title_para_index = 0
+        
+        for idx, para in enumerate(paragraphs):
+            text = self._extract_text(para)
+            if not text.strip():
+                continue  # Skip empty paragraphs when looking for title
+            
+            if self._is_header(para):
+                # Found bold+underlined paragraph - this is the title
+                title_para = para
+                title_para_index = idx
+                break
+            else:
+                # First non-empty paragraph is not bold+underlined
+                # Fall back to using first non-empty paragraph as title
+                title_para = para
+                title_para_index = idx
+                break
+        
+        if title_para is None:
+            # No paragraphs with content found, use first paragraph
+            title_para = paragraphs[0]
+            title_para_index = 0
+        
         title_text = self._extract_text(title_para)
         
         title_block = ContentBlock(
@@ -268,19 +378,25 @@ class ContentParser:
             source_file=str(docx_path),
         )
         
-        # Remaining paragraphs are body content
+        # Remaining paragraphs are body content (subheaders, quotes, or body)
         body_blocks = []
         sequence_idx = 1
         
-        for para in paragraphs[1:]:
+        for para in paragraphs[title_para_index + 1:]:
             text = self._extract_text(para)
             
             # Skip empty paragraphs if configured
             if self.skip_empty_paragraphs and not text.strip():
                 continue
             
-            # Determine if this is a quote
-            content_type = self._classify_paragraph(para, text)
+            # Determine content type based on formatting:
+            # - Bold (not underlined) = SUBHEADER
+            # - Quote detection patterns = QUOTE
+            # - Everything else = BODY
+            if self._is_subheader(para):
+                content_type = ContentType.SUBHEADER
+            else:
+                content_type = self._classify_paragraph(para, text)
             
             block = ContentBlock(
                 content_id=f"{section_id}_block_{sequence_idx}",
@@ -294,11 +410,8 @@ class ContentParser:
             sequence_idx += 1
         
         # Get associated images
-        # ====================================================================
-        # TODO: [INSERT FINAL IMAGE–TITLE MAPPING RULE HERE]
-        # The current implementation uses exact title matching.
-        # Update this logic based on your actual mapping convention.
-        # ====================================================================
+        # In web app mode, images are explicitly assigned to sections via UI.
+        # The image_mapping dict maps section titles to their image paths.
         image_paths = self._get_images_for_title(title_text, image_mapping)
         
         return ContentSection(
@@ -330,37 +443,22 @@ class ContentParser:
         text: str
     ) -> ContentType:
         """
-        Classify a paragraph as BODY or QUOTE.
+        Classify a paragraph as BODY text.
         
-        Uses the quote detection configuration to determine
-        if a paragraph should be treated as a quote.
+        Note: Quote detection has been disabled. Quotes are now specified
+        by the user via the UI as a count per section. The quote slots
+        will be filled with placeholder text ("sample quote") during
+        generation.
         
         Args:
             paragraph: python-docx Paragraph object
             text: Extracted text content
             
         Returns:
-            ContentType.QUOTE or ContentType.BODY
+            ContentType.BODY (always)
         """
-        config = self.quote_config
-        
-        # Check style name
-        style_name = paragraph.style.name if paragraph.style else None
-        if config.matches_quote_style(style_name):
-            return ContentType.QUOTE
-        
-        # Check prefix patterns
-        if config.matches_quote_prefix(text):
-            return ContentType.QUOTE
-        
-        # Check for quote markers
-        if config.has_quote_marker(text):
-            return ContentType.QUOTE
-        
-        # Check length heuristic (use last, as it's least reliable)
-        if config.matches_length_heuristic(text):
-            return ContentType.QUOTE
-        
+        # Quote detection disabled - quotes are user-specified via UI
+        # Just return BODY for all non-subheader paragraphs
         return ContentType.BODY
     
     def _get_images_for_title(
@@ -383,16 +481,8 @@ class ContentParser:
         Returns:
             List of image paths
         """
-        # ====================================================================
-        # TODO: [INSERT FINAL IMAGE–TITLE MAPPING RULE HERE]
-        # Implement your specific mapping logic here.
-        # Options:
-        # - Exact match
-        # - Case-insensitive match
-        # - Fuzzy match
-        # - Regex match
-        # - Filename convention (e.g., "title_image.jpg")
-        # ====================================================================
+        # In web app mode, images are explicitly assigned to sections via UI.
+        # This method handles the mapping lookup with fallback strategies.
         
         images = []
         

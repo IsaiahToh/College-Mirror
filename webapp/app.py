@@ -22,6 +22,14 @@ from flask import (
 )
 from werkzeug.utils import secure_filename
 
+# python-docx for extracting title from Word documents
+try:
+    from docx import Document as DocxDocument
+    HAS_DOCX = True
+except ImportError:
+    HAS_DOCX = False
+    DocxDocument = None
+
 # Create Flask app
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-key-change-in-production")
@@ -90,6 +98,61 @@ def save_session_data(data: dict) -> None:
     data_file = get_session_data_file()
     with open(data_file, "w") as f:
         json.dump(data, f, indent=2, default=str)
+
+
+def extract_title_from_docx(filepath: Path) -> str:
+    """
+    Extract title from a Word document.
+    
+    The title is the first bold+underlined paragraph in the document.
+    Falls back to the first non-empty paragraph if no bold+underlined text found.
+    Falls back to the filename if document is empty.
+    """
+    if not HAS_DOCX:
+        # If python-docx not available, use filename as title
+        return filepath.stem.replace("_", " ").replace("-", " ").title()
+    
+    try:
+        doc = DocxDocument(str(filepath))
+        
+        for para in doc.paragraphs:
+            text = para.text.strip()
+            if not text:
+                continue
+            
+            # Check if this paragraph is bold AND underlined (title)
+            if para.runs:
+                total_chars = 0
+                bold_chars = 0
+                underlined_chars = 0
+                
+                for run in para.runs:
+                    text_len = len(run.text.strip())
+                    if text_len == 0:
+                        continue
+                    total_chars += text_len
+                    if run.bold:
+                        bold_chars += text_len
+                    if run.underline:
+                        underlined_chars += text_len
+                
+                if total_chars > 0:
+                    is_bold = (bold_chars / total_chars) >= 0.8
+                    is_underlined = (underlined_chars / total_chars) >= 0.8
+                    
+                    if is_bold and is_underlined:
+                        return text
+            
+            # If first non-empty paragraph is not bold+underlined,
+            # still use it as the title (fallback)
+            return text
+        
+        # No paragraphs found, use filename
+        return filepath.stem.replace("_", " ").replace("-", " ").title()
+        
+    except Exception as e:
+        # On any error, fall back to filename
+        return filepath.stem.replace("_", " ").replace("-", " ").title()
 
 
 # ============================================================================
@@ -164,8 +227,8 @@ def upload_documents():
             filepath = session_folder / "documents" / unique_filename
             file.save(filepath)
             
-            # Extract title from filename (remove extension)
-            title = base.replace("_", " ").replace("-", " ").title()
+            # Extract title from document content (first bold+underlined paragraph)
+            title = extract_title_from_docx(filepath)
             
             doc_info = {
                 "id": str(uuid.uuid4()),
@@ -183,6 +246,7 @@ def upload_documents():
                 "document_id": doc_info["id"],
                 "title": title,
                 "images": [],
+                "quote_count": 0,  # Number of quote slots for this section
             }
             data["sections"].append(section_info)
             
@@ -247,30 +311,29 @@ def delete_document(doc_id: str):
     })
 
 
-@app.route("/api/documents/<doc_id>/title", methods=["PUT"])
-def update_document_title(doc_id: str):
-    """Update a document's title."""
+@app.route("/api/sections/<section_id>/quote_count", methods=["PUT"])
+def update_section_quote_count(section_id: str):
+    """Update the quote count for a section."""
     data = load_session_data()
-    new_title = request.json.get("title", "").strip()
     
-    if not new_title:
-        return jsonify({"success": False, "error": "Title cannot be empty"}), 400
+    try:
+        quote_count = int(request.json.get("quote_count", 0))
+        quote_count = max(0, min(10, quote_count))  # Clamp between 0 and 10
+    except (TypeError, ValueError):
+        return jsonify({"success": False, "error": "Invalid quote count"}), 400
     
-    # Update document title
-    for doc in data["documents"]:
-        if doc["id"] == doc_id:
-            doc["title"] = new_title
-            break
-    
-    # Update section title
+    # Update section quote count
     for section in data["sections"]:
-        if section["document_id"] == doc_id:
-            section["title"] = new_title
-            break
+        if section["id"] == section_id:
+            section["quote_count"] = quote_count
+            save_session_data(data)
+            return jsonify({
+                "success": True, 
+                "quote_count": quote_count,
+                "sections": data["sections"],
+            })
     
-    save_session_data(data)
-    
-    return jsonify({"success": True, "title": new_title})
+    return jsonify({"success": False, "error": "Section not found"}), 404
 
 
 # ============================================================================

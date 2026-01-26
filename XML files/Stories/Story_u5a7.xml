@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<idPkg:Story xmlns:idPkg="http://ns.adobe.com/AdobeInDesign/idml/1.0/packaging" DOMVersion="19.0">
+	<Story Self="u5a7" UserText="true" IsEndnoteStory="false" LinkResourceId="2683" AppliedTOCStyle="n" TrackChanges="false" StoryTitle="$ID/" AppliedNamedGrid="n">
+		<StoryPreference OpticalMarginAlignment="false" OpticalMarginSize="12" FrameType="TextFrameType" StoryOrientation="Horizontal" StoryDirection="LeftToRightDirection" />
+		<InCopyExportOption IncludeGraphicProxies="true" IncludeAllResources="false" />
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/$ID/[No paragraph style]" HyphenateLadderLimit="0" Hyphenation="false" HyphenationZone="32.4" MaximumWordSpacing="150" MinimumWordSpacing="75" MaximumLetterSpacing="25" MinimumLetterSpacing="-5" KeepFirstLines="1" KeepLastLines="1" RuleAboveLineWeight="0.9" RuleAboveTint="100" RuleBelowLineWeight="0.9" RuleBelowTint="100" DropcapDetail="0" SplitColumnInsideGutter="5.4" TreatIdeographicSpaceAsSpace="false">
+			<Properties>
+				<RuleAboveColor type="object">Color/Black</RuleAboveColor>
+				<RuleBelowColor type="object">Color/Black</RuleBelowColor>
+			</Properties>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="8.1" StrokeWeight="0.9" AppliedLanguage="$ID/English: USA" MiterLimit="3.6" RubyFontSize="-0.9" KentenFontSize="-0.9" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">8.1</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>Published by </Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Bold" PointSize="8.1" StrokeWeight="0.9" AppliedLanguage="$ID/English: USA" MiterLimit="3.6" RubyFontSize="-0.9" KentenFontSize="-0.9" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">9</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>College of Family Physicians Singapore </Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="7" StrokeWeight="0.9" AppliedLanguage="$ID/English: USA" MiterLimit="3.6" RubyFontSize="-0.9" KentenFontSize="-0.9" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">8</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>Registration Number: S71SS0039J Registration Period: 7 August 2023 to 6 August 2029</Content>
+				<Br />
+				<Content>College of Medicine Building</Content>
+				<Br />
+				<Content>16 College Road #01-02, Singapore 169854   </Content>
+				<Br />
+				<Content>Tel: (65) 6223 0606       Fax: (65) 6222 0204   GST Registration Number: M90367025C</Content>
+				<Br />
+				<Content>E-mail: </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="7" StrokeWeight="0.9" AppliedLanguage="$ID/English: USA" Underline="true" MiterLimit="3.6" RubyFontSize="-0.9" KentenFontSize="-0.9" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">8</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+					<UnderlineColor type="object">Color/Black</UnderlineColor>
+				</Properties>
+				<Content>information</Content>
+				<HyperlinkTextSource Self="u1ac4" Name="Hyperlink 10" Hidden="false" AppliedCharacterStyle="n">
+					<Content>@cfps.org.sg</Content>
+				</HyperlinkTextSource>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="7" StrokeWeight="0.9" AppliedLanguage="$ID/English: USA" MiterLimit="3.6" RubyFontSize="-0.9" KentenFontSize="-0.9" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">8</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Br />
+				<Content>MDDI (P) 024/11/2025</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="7.2" StrokeWeight="0.9" AppliedLanguage="$ID/English: USA" MiterLimit="3.6" RubyFontSize="-0.9" KentenFontSize="-0.9" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">8.1</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Br />
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="7.2" StrokeWeight="0.9" KerningValue="-10" AppliedLanguage="$ID/English: USA" MiterLimit="3.6" RubyFontSize="-0.9" KentenFontSize="-0.9" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">8.1</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>Articles represent the authors’ opinions &amp; not </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="7.2" StrokeWeight="0.9" AppliedLanguage="$ID/English: USA" MiterLimit="3.6" RubyFontSize="-0.9" KentenFontSize="-0.9" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">8.1</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>the </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="7.2" StrokeWeight="0.9" KerningValue="-10" AppliedLanguage="$ID/English: USA" MiterLimit="3.6" RubyFontSize="-0.9" KentenFontSize="-0.9" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">8.1</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content>views</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="7.2" StrokeWeight="0.9" AppliedLanguage="$ID/English: USA" MiterLimit="3.6" RubyFontSize="-0.9" KentenFontSize="-0.9" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">8.1</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content> of CFPS</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" PointSize="7.2" StrokeWeight="0.9" KerningValue="-10" AppliedLanguage="$ID/English: USA" MiterLimit="3.6" RubyFontSize="-0.9" KentenFontSize="-0.9" DiacriticPosition="OpentypePosition">
+				<Properties>
+					<Leading type="unit">8.1</Leading>
+					<AppliedFont type="string">Gill Sans MT</AppliedFont>
+				</Properties>
+				<Content> unless specified. Not to be reproduced without editor’s permission.</Content>
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+	</Story>
+</idPkg:Story>

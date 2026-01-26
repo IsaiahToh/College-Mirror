@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<idPkg:Story xmlns:idPkg="http://ns.adobe.com/AdobeInDesign/idml/1.0/packaging" DOMVersion="19.0">
+	<Story Self="u17b26" UserText="true" IsEndnoteStory="false" AppliedTOCStyle="n" TrackChanges="false" StoryTitle="$ID/" AppliedNamedGrid="n">
+		<StoryPreference OpticalMarginAlignment="false" OpticalMarginSize="12" FrameType="TextFrameType" StoryOrientation="Horizontal" StoryDirection="LeftToRightDirection" />
+		<InCopyExportOption IncludeGraphicProxies="true" IncludeAllResources="false" />
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/A4 V%3aBody Text" DropCapCharacters="1" DropCapLines="3" Justification="LeftAlign">
+			<Properties>
+				<ParagraphBorderGapColor type="object">Swatch/None</ParagraphBorderGapColor>
+			</Properties>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Light" Tracking="40" FillTint="100" OTFContextualAlternate="false">
+				<Properties>
+					<Leading type="unit">13</Leading>
+					<AppliedFont type="string">Helvetica Neue</AppliedFont>
+				</Properties>
+				<Content>As the year draws to a close, it invites us into a moment of reflection—on the people we journeyed with, the challenges we encountered, and the moments that kept us going. In that pause, one powerful theme often comes to mind: Gratitude.</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/A4 V%3aBody Text" Justification="LeftAlign">
+			<Properties>
+				<ParagraphBorderGapColor type="object">Swatch/None</ParagraphBorderGapColor>
+			</Properties>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Light" Tracking="40" FillTint="100" OTFContextualAlternate="false">
+				<Properties>
+					<Leading type="unit">13</Leading>
+					<AppliedFont type="string">Helvetica Neue</AppliedFont>
+				</Properties>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Medium" Tracking="40" FillTint="100" OTFContextualAlternate="false">
+				<Properties>
+					<Leading type="unit">13</Leading>
+					<AppliedFont type="string">Helvetica Neue</AppliedFont>
+				</Properties>
+				<Content>What Gratitude Truly Is</Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Light" Tracking="40" FillTint="100" OTFContextualAlternate="false">
+				<Properties>
+					<Leading type="unit">13</Leading>
+					<AppliedFont type="string">Helvetica Neue</AppliedFont>
+				</Properties>
+				<Br />
+				<Content>Gratitude is more than politeness or optimism. It is not about denying hardship, nor forcing ourselves to “look on the bright side”. Instead, it is the gentle discipline of recognising what is still good, still meaningful, and still sustaining us—even in the midst of difficulty.</Content>
+				<Br />
+				<Br />
+				<Content>It is a posture rather than a performance; a way of seeing rather than a way of escaping.</Content>
+				<Br />
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Medium" Tracking="40" FillTint="100" OTFContextualAlternate="false">
+				<Properties>
+					<Leading type="unit">13</Leading>
+					<AppliedFont type="string">Helvetica Neue</AppliedFont>
+				</Properties>
+				<Content>Why Gratitude Matters in Healing</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Light" Tracking="40" FillTint="100" OTFContextualAlternate="false">
+				<Properties>
+					<Leading type="unit">13</Leading>
+					<AppliedFont type="string">Helvetica Neue</AppliedFont>
+				</Properties>
+				<Content>Over the past decade, research has increasingly affirmed that gratitude can shift the emotional landscape for those who practise it. A randomised controlled trial by Wong et al (2018) showed that clients who engaged in gratitude writing during psychotherapy experienced sustained improvements in wellbeing for up to 12 weeks beyond the intervention. A 2023 systematic review of 64 trials by Diniz et al found that gratitude interventions consistently improved mental health and reduced symptoms of anxiety and depression.</Content>
+				<Br />
+				<Br />
+				<Content>What is striking is how small acts—a brief written reflection, a gratitude list, a thank-you letter—can unlock meaningful psychological benefits. These practices appear to increase positive emotions, broaden perspective, and reduce the weight of negative thoughts.</Content>
+				<Br />
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Medium" Tracking="40" FillTint="100" OTFContextualAlternate="false">
+				<Properties>
+					<Leading type="unit">13</Leading>
+					<AppliedFont type="string">Helvetica Neue</AppliedFont>
+				</Properties>
+				<Content>A Gift for Physicians Too</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Light" Tracking="40" FillTint="100" OTFContextualAlternate="false">
+				<Properties>
+					<Leading type="unit">13</Leading>
+					<AppliedFont type="string">Helvetica Neue</AppliedFont>
+				</Properties>
+				<Content>The healing power of gratitude is not only for patients. It is also, deeply, for us.</Content>
+				<Br />
+				<Br />
+				<Content>Family Medicine is meaningful work—but it is demanding work. Many of us carry emotional burdens quietly: the worry for a frail patient, the weight of a difficult conversation, the exhaustion that follows a relentless week. Gratitude does not erase these realities, but it gives us a different way to hold them.</Content>
+				<Br />
+				<Br />
+				<Content>When we pause to celebrate a small breakthrough with a patient, reflect on a colleague’s quiet support, or acknowledge the privilege of being trusted by those we care, something shifts internally. Gratitude grounds us and reminds us that we are held by more than just our own strength. It recentres us. It reminds us that what we do every day matters.</Content>
+				<Br />
+				<Br />
+				<Content>Simple practices—a short end-of-day reflection, a note of thanks to a colleague, or recalling one meaningful moment from clinic—can create pockets of emotional breathing space. Over time, these small acts accumulate into a habit of noticing goodness, even in the busiest weeks.</Content>
+				<Br />
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Medium" Tracking="40" FillTint="100" OTFContextualAlternate="false">
+				<Properties>
+					<Leading type="unit">13</Leading>
+					<AppliedFont type="string">Helvetica Neue</AppliedFont>
+				</Properties>
+				<Content>Being Grateful</Content>
+				<Br />
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Light" Tracking="40" FillTint="100" OTFContextualAlternate="false">
+				<Properties>
+					<Leading type="unit">13</Leading>
+					<AppliedFont type="string">Helvetica Neue</AppliedFont>
+				</Properties>
+				<Content>As we wrap up the year, perhaps gratitude offers us not just comfort, but renewal. In practising it ourselves, may we become more grounded, more present, and more generous in extending compassion—to patients, to colleagues, and to ourselves.</Content>
+				<Br />
+				<Br />
+				<Content>May gratitude be both the compass and the companion </Content>
+			</CharacterStyleRange>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Light" Tracking="20" FillTint="100" OTFContextualAlternate="false">
+				<Properties>
+					<Leading type="unit">13</Leading>
+					<AppliedFont type="string">Helvetica Neue</AppliedFont>
+				</Properties>
+				<Content>that carries us into the year ahead.</Content>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+		<ParagraphStyleRange AppliedParagraphStyle="ParagraphStyle/A4 V%3aBody Text">
+			<Properties>
+				<ParagraphBorderGapColor type="object">Swatch/None</ParagraphBorderGapColor>
+			</Properties>
+			<CharacterStyleRange AppliedCharacterStyle="CharacterStyle/$ID/[No character style]" FontStyle="Light" Tracking="20" FillTint="100" OTFContextualAlternate="false">
+				<Properties>
+					<Leading type="unit">13</Leading>
+					<AppliedFont type="string">Helvetica Neue</AppliedFont>
+				</Properties>
+				<Br />
+			</CharacterStyleRange>
+		</ParagraphStyleRange>
+	</Story>
+</idPkg:Story>

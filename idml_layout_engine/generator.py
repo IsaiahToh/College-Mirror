@@ -184,14 +184,13 @@ class StoryBuilder:
         self.default_character_style = default_character_style
         
         # Style mappings (content type -> style)
-        # ====================================================================
-        # TODO: [INSERT STYLE NAME] - Update with actual style names
-        # These should match the styles in your reference IDML
-        # ====================================================================
+        # Using actual style names from reference IDML template
+        # Note: %3a is URL-encoded colon (:) used in InDesign style references
         self.style_map = {
-            ContentType.TITLE: default_paragraph_style,
-            ContentType.BODY: default_paragraph_style,
-            ContentType.QUOTE: default_paragraph_style,
+            ContentType.TITLE: "ParagraphStyle/A4 V%3aColumn Title",
+            ContentType.SUBHEADER: "ParagraphStyle/A4 V%3aSubheading",
+            ContentType.BODY: "ParagraphStyle/A4 V%3aBody Text",
+            ContentType.QUOTE: "ParagraphStyle/A4 V%3aPull Quote",
         }
     
     def set_style_mapping(
@@ -487,21 +486,19 @@ class IDMLGenerator:
             for para_range in story_elem.findall('.//ParagraphStyleRange'):
                 story_elem.remove(para_range)
             
-            # Build new content
-            # ================================================================
-            # TODO: [INSERT STYLE NAME] - Use actual style names from template
-            # ================================================================
+            # Build new content using actual InDesign styles from template
+            # Note: %3a is URL-encoded colon (:) used in InDesign style references
             for content_block in content_blocks:
                 # Determine style based on content type
                 if content_block.content_type == ContentType.TITLE:
-                    # Use title style if configured
-                    para_style = "ParagraphStyle/$ID/NormalParagraphStyle"
+                    para_style = "ParagraphStyle/A4 V%3aColumn Title"
+                elif content_block.content_type == ContentType.SUBHEADER:
+                    para_style = "ParagraphStyle/A4 V%3aSubheading"
                 elif content_block.content_type == ContentType.QUOTE:
-                    # Use quote style if configured
-                    para_style = "ParagraphStyle/$ID/NormalParagraphStyle"
+                    para_style = "ParagraphStyle/A4 V%3aPull Quote"
                 else:
-                    # Use body style
-                    para_style = "ParagraphStyle/$ID/NormalParagraphStyle"
+                    # Default to body text style
+                    para_style = "ParagraphStyle/A4 V%3aBody Text"
                 
                 para_elem = create_paragraph_element(
                     text=content_block.text,
@@ -537,52 +534,101 @@ class IDMLGenerator:
     def _update_image_links(
         self,
         assignments: Dict[str, SlotAssignment],
-        image_paths: Dict[str, str],
+        image_paths: Dict[str, str | List[str]],
     ) -> None:
         """
         Update image links in graphic frames.
         
         For IMAGE slot assignments, update the Link element to
         point to the new image file.
+        
+        IDML Structure for images:
+        <Rectangle Self="..." ContentType="GraphicType">
+            <Image Self="...">
+                <Link Self="..." LinkResourceURI="file:///path/to/image.jpg"/>
+            </Image>
+        </Rectangle>
         """
-        # ====================================================================
-        # TODO: [INSERT RECTANGLE / GRAPHIC FRAME DETAILS]
-        # Implement image link updates based on actual IDML structure
-        # 
-        # Typical structure for image frames:
-        # <Rectangle Self="...">
-        #     <Image Self="...">
-        #         <Link Self="..." LinkResourceURI="file:///path/to/image.jpg"/>
-        #     </Image>
-        # </Rectangle>
-        # 
-        # Or:
-        # <Rectangle Self="..." ContentType="GraphicType">
-        #     <Properties>
-        #         <Contents>
-        #             <Link Self="..." LinkResourceURI="..."/>
-        #         </Contents>
-        #     </Properties>
-        # </Rectangle>
-        # ====================================================================
+        from urllib.parse import quote
+        import os
         
-        for slot_id, assignment in assignments.items():
-            slot = assignment.slot
-            content = assignment.content
-            
-            if slot.slot_type != SlotType.IMAGE:
+        if not image_paths:
+            logger.debug("No image paths provided, skipping image updates")
+            return
+        
+        # Flatten image_paths to a list of all image paths with their section titles
+        # image_paths is Dict[section_title, str | List[str]]
+        all_images: List[Tuple[str, str]] = []  # (section_title, image_path)
+        for section_title, paths in image_paths.items():
+            if isinstance(paths, list):
+                for p in paths:
+                    all_images.append((section_title, p))
+            else:
+                all_images.append((section_title, paths))
+        
+        if not all_images:
+            logger.debug("No images to update")
+            return
+        
+        # Find all Rectangle elements with ContentType="GraphicType" in spreads
+        image_frames = []
+        for file_path, tree in self._xml_trees.items():
+            if "Spread" not in file_path:
                 continue
             
-            if not content.image_path:
-                continue
-            
-            # Find the frame in spreads and update image link
-            # This requires finding the Rectangle/GraphicFrame element
-            # and updating its Link child element
-            
-            logger.debug(f"Would update image link for slot {slot_id} to {content.image_path}")
+            root = tree.getroot()
+            # Find all Rectangles that contain images (have Image/Link children)
+            for rect in root.findall('.//Rectangle[@ContentType="GraphicType"]'):
+                frame_id = rect.get('Self', '')
+                # Find the Link element inside
+                link = rect.find('.//Link')
+                if link is not None and frame_id:
+                    image_frames.append({
+                        'frame_id': frame_id,
+                        'element': rect,
+                        'link': link,
+                        'file_path': file_path,
+                    })
         
-        logger.debug("Image link updates (placeholder)")
+        logger.debug(f"Found {len(image_frames)} image frames in spreads")
+        
+        # Assign images to frames
+        # For now, simple sequential assignment - images go to frames in order
+        for idx, frame_info in enumerate(image_frames):
+            if idx >= len(all_images):
+                break
+            
+            section_title, image_path = all_images[idx]
+            
+            # Convert to file:// URI format
+            # IDML uses file:/ URLs with URL-encoded paths
+            abs_path = os.path.abspath(image_path)
+            # URL-encode the path (but keep / and :)
+            encoded_path = quote(abs_path, safe='/:')
+            file_uri = f"file:{encoded_path}"
+            
+            # Determine format from extension
+            ext = os.path.splitext(image_path)[1].lower()
+            format_map = {
+                '.jpg': '$ID/JPEG',
+                '.jpeg': '$ID/JPEG',
+                '.png': '$ID/Portable Network Graphics (PNG)',
+                '.tif': '$ID/TIFF',
+                '.tiff': '$ID/TIFF',
+                '.psd': '$ID/Photoshop',
+                '.eps': '$ID/EPS',
+                '.pdf': '$ID/Adobe Portable Document Format (PDF)',
+            }
+            link_format = format_map.get(ext, '$ID/JPEG')
+            
+            # Update the Link element
+            link = frame_info['link']
+            link.set('LinkResourceURI', file_uri)
+            link.set('LinkResourceFormat', link_format)
+            
+            logger.debug(f"Updated image frame {frame_info['frame_id']} -> {image_path}")
+        
+        logger.info(f"Updated {min(len(image_frames), len(all_images))} image links")
     
     def _write_xml_files(self) -> None:
         """Write modified XML trees back to files."""

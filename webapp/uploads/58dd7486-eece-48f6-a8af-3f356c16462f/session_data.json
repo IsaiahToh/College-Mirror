@@ -1,55 +1,42 @@
 {
   "documents": [
     {
-      "id": "9a441394-25a1-498c-abfa-c6bc8850b70c",
-      "filename": "02_Eugene_The_Healing_Power_of_Gratitude_ML_iii_Clean_34bc8c88.docx",
+      "id": "ad4b0412-98c0-444d-bba0-bb735c14922d",
+      "filename": "02_Eugene_The_Healing_Power_of_Gratitude_ML_iii_Clean_55ad5c11.docx",
       "original_filename": "02_Eugene_The_Healing_Power_of_Gratitude_ML_iii_Clean.docx",
-      "title": "02 Eugene The Healing Power Of Gratitude Ml Iii Clean",
-      "uploaded_at": "2026-01-26T15:53:03.123228"
-    },
-    {
-      "id": "def205e1-10b3-4a67-b109-44d79e4f0119",
-      "filename": "04_Aziz_-_Journey_to_Fellowship_-_ML_iii_Clean_95c0c0e0.docx",
-      "original_filename": "04_Aziz_-_Journey_to_Fellowship_-_ML_iii_Clean.docx",
-      "title": "04 Aziz   Journey To Fellowship   Ml Iii Clean",
-      "uploaded_at": "2026-01-26T15:53:03.124535"
+      "title": "The Healing Power of Gratitude",
+      "uploaded_at": "2026-01-26T17:54:10.008792"
     }
   ],
   "sections": [
     {
-      "id": "9a441394-25a1-498c-abfa-c6bc8850b70c",
-      "document_id": "9a441394-25a1-498c-abfa-c6bc8850b70c",
-      "title": "02 Eugene The Healing Power Of Gratitude Ml Iii Clean",
+      "id": "ad4b0412-98c0-444d-bba0-bb735c14922d",
+      "document_id": "ad4b0412-98c0-444d-bba0-bb735c14922d",
+      "title": "The Healing Power of Gratitude",
       "images": [
         {
-          "id": "7d02e682-a076-440a-89b9-14a5402c8d07",
-          "filename": "02_Eugene_The_Healing_Power_Of_Gratitude_Ml_Iii_Clean_74f1b91a.JPG",
+          "id": "01a8624e-8eea-4413-8213-ce4180b3565e",
+          "filename": "The_Healing_Power_of_Gratitude_0df88007.JPG",
           "original_filename": "117.JPG",
-          "uploaded_at": "2026-01-26T15:53:16.574901"
-        }
-      ]
-    },
-    {
-      "id": "def205e1-10b3-4a67-b109-44d79e4f0119",
-      "document_id": "def205e1-10b3-4a67-b109-44d79e4f0119",
-      "title": "04 Aziz   Journey To Fellowship   Ml Iii Clean",
-      "images": [
+          "uploaded_at": "2026-01-26T17:54:16.699263"
+        },
         {
-          "id": "540d65fb-2bf6-4134-b1a5-b1a4be02ce48",
-          "filename": "04_Aziz___Journey_To_Fellowship___Ml_Iii_Clean_58a0167b.JPG",
+          "id": "bb0581df-8fdf-400b-89e2-ab2117f47e74",
+          "filename": "The_Healing_Power_of_Gratitude_2a18f624.JPG",
           "original_filename": "162.JPG",
-          "uploaded_at": "2026-01-26T15:53:19.590339"
+          "uploaded_at": "2026-01-26T17:54:16.701871"
         }
-      ]
+      ],
+      "quote_count": 1
     }
   ],
   "template": {
     "filename": "CM_2026.idml",
-    "original_filename": "CM 2026.idml",
-    "uploaded_at": "2026-01-26T15:53:06.230532"
+    "original_filename": "CM_2026.idml",
+    "uploaded_at": "2026-01-26T17:54:21.717311"
   },
   "settings": {
-    "seed": 5,
+    "seed": 3,
     "enable_variations": true
   }
 }

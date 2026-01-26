@@ -92,34 +92,40 @@ def register_namespaces():
 # =============================================================================
 
 # ============================================================================
-# STYLE NAMES - TO BE CONFIGURED
+# STYLE NAMES - CONFIGURED FOR TEMPLATE
 # ============================================================================
-# TODO: [INSERT STYLE NAME] - Replace with actual style names from reference IDML
-# These are placeholder values that must be updated based on the actual
-# paragraph and object styles used in the reference IDML file.
+# Style names extracted from reference IDML Styles.xml
+# Supports both vertical (A4 V) and horizontal (A4 H) layout variants
 
 TITLE_STYLE_NAMES = [
-    # "ArticleTitle",
-    # "SectionHead", 
-    # "Headline",
+    "A4 V:Column Title",
+    "A4 H:Column Title",
+    "Column Title",
+]
+
+SUBHEADER_STYLE_NAMES = [
+    "A4 V:Subheading",
+    "A4 H:Subheading",
+    "Subheading",
 ]
 
 BODY_STYLE_NAMES = [
-    # "BodyText",
-    # "Body",
-    # "NormalParagraph",
+    "A4 V:Body Text",
+    "A4 H:Body Text",
+    "Body Text",
 ]
 
 QUOTE_STYLE_NAMES = [
-    # "PullQuote",
-    # "Quote",
-    # "BlockQuote",
+    "A4 V:Pull Quote",
+    "A4 H:Pull Quote",
+    "Pull Quote",
 ]
 
 # Object styles for image frames
 IMAGE_OBJECT_STYLES = [
-    # "PhotoFrame",
-    # "ImageBox",
+    "A4 V:Photo Frame",
+    "A4 H:Photo Frame",
+    "Photo Frame",
 ]
 
 # ============================================================================
@@ -747,12 +753,8 @@ class IDMLParser:
             for style in frame.applied_paragraph_styles:
                 # Clean up style name (remove prefix like "ParagraphStyle/")
                 clean_style = style.split('/')[-1] if '/' in style else style
-                
-                # ================================================================
-                # TODO: [INSERT STYLE NAME] - Update these style name checks
-                # The style names below are placeholders. Replace with actual
-                # style names from your reference IDML file.
-                # ================================================================
+                # URL-decode the style name (e.g., %3a -> :)
+                clean_style = clean_style.replace('%3a', ':')
                 
                 # Check for title styles
                 if TITLE_STYLE_NAMES:
@@ -762,6 +764,15 @@ class IDMLParser:
                     # Fallback heuristic if no styles configured
                     if 'title' in clean_style.lower() or 'head' in clean_style.lower():
                         return SlotType.TITLE
+                
+                # Check for subheader styles
+                if SUBHEADER_STYLE_NAMES:
+                    if any(ss.lower() in clean_style.lower() for ss in SUBHEADER_STYLE_NAMES):
+                        return SlotType.SUBHEADER
+                else:
+                    # Fallback heuristic
+                    if 'subhead' in clean_style.lower():
+                        return SlotType.SUBHEADER
                 
                 # Check for quote styles
                 if QUOTE_STYLE_NAMES:

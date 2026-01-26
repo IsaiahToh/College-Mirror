@@ -473,15 +473,6 @@
             white-space: nowrap;
         }
 
-        .section-title input {
-            flex: 1;
-            border: 1px solid var(--primary);
-            border-radius: 4px;
-            padding: 4px 8px;
-            font-size: 0.9rem;
-            font-weight: 600;
-        }
-
         .section-actions {
             display: flex;
             gap: 4px;
@@ -511,6 +502,72 @@
         .section-card-body {
             padding: 16px;
             min-height: 180px;
+        }
+
+        /* Quote Count Control */
+        .quote-control {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: var(--gray-50);
+            border-top: 1px solid var(--gray-200);
+        }
+
+        .quote-control label {
+            font-size: 0.8rem;
+            color: var(--gray-600);
+            font-weight: 500;
+        }
+
+        .quote-control .quote-input-group {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .quote-control button {
+            width: 24px;
+            height: 24px;
+            border: 1px solid var(--gray-300);
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray-600);
+            transition: all 0.2s;
+        }
+
+        .quote-control button:hover {
+            background: var(--gray-100);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .quote-control .quote-value {
+            width: 32px;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--gray-800);
+        }
+
+        .quote-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-left: auto;
+        }
+
+        .quote-badge {
+            font-size: 0.7rem;
+            background: var(--warning);
+            color: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-weight: 500;
         }
 
         /* Image Drop Zone */
@@ -822,7 +879,7 @@
         <!-- Header -->
         <header class="header">
             <h1><i class="fas fa-layer-group"></i> IDML Layout Engine</h1>
-            <p>Generate beautiful InDesign layouts from Word documents</p>
+            <p>Creating new InDesign layouts with new content</p>
         </header>
 
         <!-- Main Content -->
@@ -1266,29 +1323,6 @@
             }
         }
 
-        async function updateSectionTitle(sectionId, newTitle) {
-            const docId = state.sections.find(s => s.id === sectionId)?.document_id;
-            if (!docId) return;
-
-            try {
-                const response = await fetch(`/api/documents/${docId}/title`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ title: newTitle })
-                });
-                const data = await response.json();
-                
-                if (data.success) {
-                    const section = state.sections.find(s => s.id === sectionId);
-                    const doc = state.documents.find(d => d.id === docId);
-                    if (section) section.title = newTitle;
-                    if (doc) doc.title = newTitle;
-                }
-            } catch (error) {
-                showToast('error', 'Failed to update title');
-            }
-        }
-
         // ============================================================================
         // UI Rendering
         // ============================================================================
@@ -1366,12 +1400,9 @@
                     <div class="section-card-header">
                         <div class="section-title" id="title-${section.id}">
                             <i class="fas fa-file-alt"></i>
-                            <span ondblclick="editTitle('${section.id}')">${escapeHtml(section.title)}</span>
+                            <span>${escapeHtml(section.title)}</span>
                         </div>
                         <div class="section-actions">
-                            <button onclick="editTitle('${section.id}')" title="Edit title">
-                                <i class="fas fa-pen"></i>
-                            </button>
                             <button class="delete" onclick="deleteDocument('${section.document_id}')" title="Remove">
                                 <i class="fas fa-trash"></i>
                             </button>
@@ -1379,6 +1410,18 @@
                     </div>
                     <div class="section-card-body">
                         ${renderSectionImages(section)}
+                    </div>
+                    <div class="quote-control">
+                        <label><i class="fas fa-quote-left"></i> Quotes:</label>
+                        <div class="quote-input-group">
+                            <button onclick="updateQuoteCount('${section.id}', -1)" title="Decrease">
+                                <i class="fas fa-minus"></i>
+                            </button>
+                            <span class="quote-value">${section.quote_count || 0}</span>
+                            <button onclick="updateQuoteCount('${section.id}', 1)" title="Increase">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
                     </div>
                 </div>
             `).join('');
@@ -1517,40 +1560,40 @@
         }
 
         // ============================================================================
-        // Title Editing
+        // Quote Count Management
         // ============================================================================
 
-        function editTitle(sectionId) {
+        function renderQuoteBadges(count) {
+            if (count === 0) return '';
+            return Array(count).fill('<span class="quote-badge">Quote</span>').join('');
+        }
+
+        async function updateQuoteCount(sectionId, delta) {
             const section = state.sections.find(s => s.id === sectionId);
             if (!section) return;
             
-            const container = document.getElementById(`title-${sectionId}`);
-            const currentTitle = section.title;
+            const currentCount = section.quote_count || 0;
+            const newCount = Math.max(0, Math.min(10, currentCount + delta));
             
-            container.innerHTML = `
-                <input type="text" value="${escapeHtml(currentTitle)}" 
-                       onblur="saveTitle('${sectionId}', this.value)"
-                       onkeydown="handleTitleKeydown(event, '${sectionId}', this.value)"
-                       autofocus>
-            `;
-            
-            container.querySelector('input').focus();
-            container.querySelector('input').select();
-        }
+            if (newCount === currentCount) return;
 
-        function saveTitle(sectionId, newTitle) {
-            newTitle = newTitle.trim();
-            if (newTitle) {
-                updateSectionTitle(sectionId, newTitle);
-            }
-            renderSections();
-        }
-
-        function handleTitleKeydown(e, sectionId, value) {
-            if (e.key === 'Enter') {
-                e.target.blur();
-            } else if (e.key === 'Escape') {
-                renderSections();
+            try {
+                const response = await fetch(`/api/sections/${sectionId}/quote_count`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ quote_count: newCount })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    state.sections = data.sections;
+                    renderSections();
+                } else {
+                    showToast('error', data.error || 'Failed to update quote count');
+                }
+            } catch (error) {
+                console.error('Error updating quote count:', error);
+                showToast('error', 'Failed to update quote count');
             }
         }
 
