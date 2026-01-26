@@ -26,6 +26,29 @@ pip install -e ".[dev]"
 
 ## Quick Start
 
+### Web Application (Recommended)
+
+The easiest way to use the IDML Layout Engine is through the web interface:
+
+```bash
+# Run the web application
+python run.py
+
+# Or with custom options
+python run.py --port 8080 --debug
+```
+
+Then open http://127.0.0.1:5000 in your browser.
+
+**Features:**
+- Drag & drop Word documents
+- Drag & drop images to specific sections
+- Visual section management with 4-column grid
+- Edit section titles inline
+- Upload reference IDML template
+- Configure variation seed and enable/disable variations
+- One-click IDML generation and download
+
 ### Command Line
 
 ```bash
@@ -231,6 +254,64 @@ idml-layout inspect template.idml --json template.json
 3. **Debuggable**: Every stage can be inspected and logged
 4. **Maintainable**: Heavy documentation and explicit assumptions
 5. **Conservative**: Only make changes explicitly defined by rules
+
+## Tech Stack & Core Libraries
+
+### Backend
+| Technology | Purpose |
+|------------|---------|
+| **Python 3.10+** | Core language |
+| **Flask** | Web framework for the UI |
+| **Werkzeug** | WSGI utilities, file uploads |
+
+### Core Libraries
+| Library | Purpose |
+|---------|---------|
+| **lxml** | XML parsing and manipulation for IDML files |
+| **python-docx** | Reading Word documents (.docx) |
+| **Pillow** | Image processing and validation |
+
+### Frontend
+| Technology | Purpose |
+|------------|---------|
+| **Vanilla JavaScript** | No framework, pure JS for simplicity |
+| **HTML5 Drag & Drop API** | File and image drag/drop handling |
+| **CSS3** | Custom styling with CSS variables |
+| **Font Awesome** | Icons |
+
+### File Formats
+| Format | Role |
+|--------|------|
+| **IDML** | Adobe InDesign Markup Language (ZIP of XML files) |
+| **DOCX** | Microsoft Word documents (ZIP of XML files) |
+| **JSON** | Session data persistence |
+
+### Architecture Pattern
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     Web Application                         │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────────┐  │
+│  │   HTML/CSS  │◄──►│   Flask     │◄──►│  Session Store  │  │
+│  │   + JS UI   │    │   Routes    │    │  (JSON files)   │  │
+│  └─────────────┘    └──────┬──────┘    └─────────────────┘  │
+└────────────────────────────┼────────────────────────────────┘
+                             │
+                             ▼
+┌─────────────────────────────────────────────────────────────┐
+│                   IDML Layout Engine                        │
+│  ┌─────────────┐    ┌─────────────┐    ┌─────────────────┐  │
+│  │ IDMLParser  │    │ ContentParser│    │ VariationEngine │  │
+│  │   (lxml)    │    │(python-docx)│    │  (seedable RNG) │  │
+│  └──────┬──────┘    └──────┬──────┘    └────────┬────────┘  │
+│         │                  │                    │           │
+│         └──────────────────┼────────────────────┘           │
+│                            ▼                                │
+│                   ┌─────────────────┐                       │
+│                   │  IDMLGenerator  │                       │
+│                   │  (ZIP + lxml)   │                       │
+│                   └─────────────────┘                       │
+└─────────────────────────────────────────────────────────────┘
+```
 
 ## Limitations
 

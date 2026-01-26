@@ -1,0 +1,8 @@
+# Web Application Requirements
+Flask>=2.3.0
+Werkzeug>=2.3.0
+
+# Core IDML Engine Requirements
+lxml>=4.9.0
+python-docx>=0.8.11
+Pillow>=9.0.0

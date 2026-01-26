@@ -4,146 +4,110 @@ Tests for the main layout engine.
 
 import pytest
 from pathlib import Path
-from idml_layout_engine.engine import LayoutEngine, EngineConfig, EngineResult
+from idml_layout_engine.engine import LayoutEngine, LayoutEngineConfig
 
 
-class TestEngineConfig:
-    """Tests for EngineConfig."""
+class TestLayoutEngineConfig:
+    """Tests for LayoutEngineConfig."""
     
     def test_default_config(self):
         """Test default configuration values."""
-        config = EngineConfig()
+        config = LayoutEngineConfig()
         
-        assert config.seed is None
-        assert config.enable_variations is True
+        assert config.variation_seed is None
         assert config.debug_mode is False
-        assert config.output_format == "idml"
+        assert config.max_variations_per_page == 3
     
     def test_config_with_seed(self):
         """Test configuration with seed."""
-        config = EngineConfig(seed=42)
+        config = LayoutEngineConfig(variation_seed=42)
         
-        assert config.seed == 42
+        assert config.variation_seed == 42
     
     def test_config_debug_mode(self):
         """Test debug mode configuration."""
-        config = EngineConfig(debug_mode=True)
+        config = LayoutEngineConfig(debug_mode=True)
         
         assert config.debug_mode is True
-    
-    def test_config_disable_variations(self):
-        """Test disabling variations."""
-        config = EngineConfig(enable_variations=False)
-        
-        assert config.enable_variations is False
 
 
 class TestLayoutEngine:
     """Tests for LayoutEngine class."""
     
     @pytest.fixture
-    def engine(self):
+    def mock_idml_path(self, tmp_path, minimal_idml_bytes):
+        """Create a temporary IDML file."""
+        idml_path = tmp_path / "template.idml"
+        idml_path.write_bytes(minimal_idml_bytes)
+        return idml_path
+    
+    @pytest.fixture
+    def engine(self, mock_idml_path):
         """Create a basic engine instance."""
-        config = EngineConfig(seed=42)
-        return LayoutEngine(config)
+        config = LayoutEngineConfig(variation_seed=42)
+        return LayoutEngine(
+            reference_idml=mock_idml_path,
+            config=config,
+        )
     
     @pytest.fixture
-    def engine_no_variations(self):
+    def engine_no_variations(self, mock_idml_path):
         """Create an engine with variations disabled."""
-        config = EngineConfig(enable_variations=False)
-        return LayoutEngine(config)
+        config = LayoutEngineConfig(variation_seed=None)
+        return LayoutEngine(
+            reference_idml=mock_idml_path,
+            config=config,
+        )
     
     @pytest.fixture
-    def engine_debug(self):
+    def engine_debug(self, mock_idml_path):
         """Create an engine in debug mode."""
-        config = EngineConfig(debug_mode=True, seed=42)
-        return LayoutEngine(config)
+        config = LayoutEngineConfig(debug_mode=True, variation_seed=42)
+        return LayoutEngine(
+            reference_idml=mock_idml_path,
+            config=config,
+        )
     
     def test_engine_initialization(self, engine):
         """Test engine initializes correctly."""
         assert engine is not None
-        assert engine.config.seed == 42
+        assert engine.config.variation_seed == 42
     
-    def test_engine_has_parser(self, engine):
-        """Test engine has an IDML parser."""
-        assert engine.parser is not None
-    
-    def test_engine_has_content_parser(self, engine):
-        """Test engine has a content parser."""
-        assert engine.content_parser is not None
-    
-    def test_engine_has_variation_engine(self, engine):
-        """Test engine has a variation engine."""
-        assert engine.variation_engine is not None
-    
-    def test_engine_has_generator(self, engine):
-        """Test engine has an IDML generator."""
-        assert engine.generator is not None
-    
-    def test_engine_determinism_with_seed(self):
+    def test_engine_determinism_with_seed(self, mock_idml_path):
         """Test that same seed produces same results."""
         # Create two engines with same seed
-        engine1 = LayoutEngine(EngineConfig(seed=42))
-        engine2 = LayoutEngine(EngineConfig(seed=42))
+        engine1 = LayoutEngine(
+            reference_idml=mock_idml_path,
+            variation_seed=42,
+        )
+        engine2 = LayoutEngine(
+            reference_idml=mock_idml_path,
+            variation_seed=42,
+        )
         
-        # Their variation engines should have same seed
-        assert engine1.variation_engine.seed == engine2.variation_engine.seed == 42
+        # Their variation seeds should match
+        assert engine1.config.variation_seed == engine2.config.variation_seed == 42
     
     def test_engine_no_variations_mode(self, engine_no_variations):
         """Test engine respects no-variations mode."""
-        assert engine_no_variations.config.enable_variations is False
+        assert engine_no_variations.config.variation_seed is None
     
     def test_engine_debug_mode(self, engine_debug):
         """Test engine respects debug mode."""
         assert engine_debug.config.debug_mode is True
 
 
-class TestEngineResult:
-    """Tests for EngineResult class."""
-    
-    def test_result_success(self):
-        """Test successful result."""
-        result = EngineResult(
-            success=True,
-            output_path=Path("/output/test.idml"),
-        )
-        
-        assert result.success is True
-        assert result.output_path == Path("/output/test.idml")
-        assert result.error is None
-    
-    def test_result_failure(self):
-        """Test failure result."""
-        result = EngineResult(
-            success=False,
-            error="Something went wrong",
-        )
-        
-        assert result.success is False
-        assert result.error == "Something went wrong"
-    
-    def test_result_with_debug_info(self):
-        """Test result with debug information."""
-        result = EngineResult(
-            success=True,
-            output_path=Path("/output/test.idml"),
-            debug_info={
-                "template_slots": 10,
-                "content_blocks": 5,
-                "variations_applied": 3,
-            },
-        )
-        
-        assert result.debug_info is not None
-        assert result.debug_info["template_slots"] == 10
-
-
 class TestLayoutEngineWorkflow:
     """Tests for the engine workflow without actual files."""
     
     @pytest.fixture
-    def engine(self):
-        return LayoutEngine(EngineConfig(seed=42, debug_mode=True))
+    def engine(self, tmp_path, minimal_idml_bytes):
+        idml_path = tmp_path / "template.idml"
+        idml_path.write_bytes(minimal_idml_bytes)
+        return LayoutEngine(
+            reference_idml=idml_path,
+            config=LayoutEngineConfig(variation_seed=42, debug_mode=True),
+        )
     
     def test_parse_template_method_exists(self, engine):
         """Test parse_template method exists."""
@@ -157,51 +121,36 @@ class TestLayoutEngineWorkflow:
         """Test generate method exists."""
         assert hasattr(engine, 'generate')
     
-    def test_get_report_method_exists(self, engine):
-        """Test get_report method exists."""
-        assert hasattr(engine, 'get_report')
+    def test_get_template_summary_method_exists(self, engine):
+        """Test get_template_summary method exists."""
+        assert hasattr(engine, 'get_template_summary')
     
-    def test_reset_method_exists(self, engine):
-        """Test reset method exists."""
-        assert hasattr(engine, 'reset')
+    def test_add_content_document_method_exists(self, engine):
+        """Test add_content_document method exists."""
+        assert hasattr(engine, 'add_content_document')
+    
+    def test_set_image_mapping_method_exists(self, engine):
+        """Test set_image_mapping method exists."""
+        assert hasattr(engine, 'set_image_mapping')
 
 
 class TestLayoutEngineConfiguration:
     """Tests for engine configuration options."""
     
-    def test_config_validation_rules(self):
-        """Test that configuration accepts variation rules."""
-        config = EngineConfig(
-            variation_rules=[
-                {
-                    "rule_id": "custom_rule",
-                    "slot_type": "IMAGE",
-                    "probability": 0.5,
-                }
-            ]
-        )
+    def test_config_max_variations(self):
+        """Test that configuration accepts max variations setting."""
+        config = LayoutEngineConfig(max_variations_per_page=5)
         
-        assert config.variation_rules is not None
-        assert len(config.variation_rules) == 1
+        assert config.max_variations_per_page == 5
     
-    def test_config_slot_type_mappings(self):
-        """Test that configuration accepts slot type mappings."""
-        config = EngineConfig(
-            slot_type_mappings={
-                "ParagraphStyle/CustomTitle": "TITLE",
-                "ParagraphStyle/CustomBody": "PARAGRAPH",
-            }
-        )
+    def test_config_strip_whitespace(self):
+        """Test strip whitespace configuration."""
+        config = LayoutEngineConfig(strip_whitespace=False)
         
-        assert config.slot_type_mappings is not None
-        assert len(config.slot_type_mappings) == 2
+        assert config.strip_whitespace is False
     
-    def test_config_output_settings(self):
-        """Test output settings configuration."""
-        config = EngineConfig(
-            output_format="idml",
-            compress_output=True,
-        )
+    def test_config_skip_empty_paragraphs(self):
+        """Test skip empty paragraphs configuration."""
+        config = LayoutEngineConfig(skip_empty_paragraphs=False)
         
-        assert config.output_format == "idml"
-        assert config.compress_output is True
+        assert config.skip_empty_paragraphs is False

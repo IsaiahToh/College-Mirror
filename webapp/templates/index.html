@@ -1,0 +1,1609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDML Layout Engine</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #a5b4fc;
+            --secondary: #0ea5e9;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-400: #9ca3af;
+            --gray-500: #6b7280;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-800: #1f2937;
+            --gray-900: #111827;
+            --radius: 12px;
+            --radius-sm: 8px;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--gray-800);
+        }
+
+        .app-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 24px;
+            min-height: 100vh;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 32px 0 48px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        /* Main Layout */
+        .main-content {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 24px;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .card-header h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-header h3 i {
+            color: var(--primary);
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        /* Upload Zones */
+        .upload-zone {
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius-sm);
+            padding: 32px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            background: var(--gray-50);
+        }
+
+        .upload-zone:hover {
+            border-color: var(--primary);
+            background: #f5f3ff;
+        }
+
+        .upload-zone.drag-over {
+            border-color: var(--primary);
+            background: #ede9fe;
+            transform: scale(1.02);
+        }
+
+        .upload-zone i {
+            font-size: 2rem;
+            color: var(--gray-400);
+            margin-bottom: 12px;
+        }
+
+        .upload-zone p {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+
+        .upload-zone .hint {
+            font-size: 0.8rem;
+            color: var(--gray-400);
+            margin-top: 8px;
+        }
+
+        .upload-zone input[type="file"] {
+            display: none;
+        }
+
+        /* File List */
+        .file-list {
+            margin-top: 16px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 12px;
+            background: var(--gray-50);
+            border-radius: var(--radius-sm);
+            margin-bottom: 8px;
+            font-size: 0.875rem;
+        }
+
+        .file-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .file-item .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .file-item .file-info i {
+            color: var(--primary);
+        }
+
+        .file-item .file-name {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .file-item .delete-btn {
+            background: none;
+            border: none;
+            color: var(--gray-400);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+
+        .file-item .delete-btn:hover {
+            color: var(--danger);
+            background: #fef2f2;
+        }
+
+        /* Template Status */
+        .template-status {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            background: #ecfdf5;
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        .template-status.empty {
+            background: var(--gray-50);
+            color: var(--gray-500);
+        }
+
+        /* Settings */
+        .setting-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--gray-100);
+        }
+
+        .setting-row:last-child {
+            border-bottom: none;
+        }
+
+        .setting-label {
+            font-size: 0.9rem;
+            color: var(--gray-700);
+        }
+
+        .setting-input {
+            width: 120px;
+            padding: 8px 12px;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            font-size: 0.875rem;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 48px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--gray-300);
+            transition: 0.3s;
+            border-radius: 26px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .toggle-switch input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+
+        .toggle-switch input:checked + .toggle-slider:before {
+            transform: translateX(22px);
+        }
+
+        /* Generate Button */
+        .generate-btn {
+            width: 100%;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+            box-shadow: var(--shadow);
+        }
+
+        .generate-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .generate-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .generate-btn.loading {
+            pointer-events: none;
+        }
+
+        .generate-btn .spinner {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Sections Area */
+        .sections-container {
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            min-height: 600px;
+        }
+
+        .sections-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .sections-header h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sections-header h2 i {
+            color: var(--primary);
+        }
+
+        .section-count {
+            background: var(--primary-light);
+            color: var(--primary-dark);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+
+        .sections-body {
+            padding: 24px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 40px;
+            color: var(--gray-500);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: var(--gray-300);
+            margin-bottom: 20px;
+        }
+
+        .empty-state h3 {
+            font-size: 1.25rem;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+        }
+
+        /* Section Grid */
+        .sections-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 1200px) {
+            .sections-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .sections-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Section Card */
+        .section-card {
+            background: var(--gray-50);
+            border: 2px solid var(--gray-200);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .section-card:hover {
+            border-color: var(--primary-light);
+            box-shadow: var(--shadow);
+        }
+
+        .section-card.drag-over {
+            border-color: var(--primary);
+            background: #ede9fe;
+            transform: scale(1.02);
+        }
+
+        .section-card-header {
+            padding: 14px 16px;
+            background: white;
+            border-bottom: 1px solid var(--gray-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .section-title {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--gray-800);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .section-title i {
+            color: var(--secondary);
+        }
+
+        .section-title span {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .section-title input {
+            flex: 1;
+            border: 1px solid var(--primary);
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .section-actions {
+            display: flex;
+            gap: 4px;
+        }
+
+        .section-actions button {
+            background: none;
+            border: none;
+            color: var(--gray-400);
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            font-size: 0.8rem;
+        }
+
+        .section-actions button:hover {
+            color: var(--gray-700);
+            background: var(--gray-200);
+        }
+
+        .section-actions button.delete:hover {
+            color: var(--danger);
+            background: #fef2f2;
+        }
+
+        .section-card-body {
+            padding: 16px;
+            min-height: 180px;
+        }
+
+        /* Image Drop Zone */
+        .image-drop-zone {
+            border: 2px dashed var(--gray-300);
+            border-radius: var(--radius-sm);
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-drop-zone:hover {
+            border-color: var(--primary);
+            background: #f5f3ff;
+        }
+
+        .image-drop-zone.drag-over {
+            border-color: var(--primary);
+            background: #ede9fe;
+        }
+
+        .image-drop-zone i {
+            font-size: 1.5rem;
+            color: var(--gray-400);
+            margin-bottom: 8px;
+        }
+
+        .image-drop-zone p {
+            font-size: 0.8rem;
+            color: var(--gray-500);
+        }
+
+        /* Image Container (droppable area) */
+        .images-container {
+            border: 2px dashed transparent;
+            border-radius: var(--radius-sm);
+            padding: 8px;
+            margin: -8px;
+            transition: all 0.2s;
+        }
+
+        .images-container.drag-over {
+            border-color: var(--primary);
+            background: #f5f3ff;
+        }
+
+        /* Image Grid */
+        .images-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .image-thumb {
+            position: relative;
+            aspect-ratio: 1;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            background: var(--gray-200);
+            cursor: grab;
+        }
+
+        .image-thumb:active {
+            cursor: grabbing;
+        }
+
+        .image-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .image-thumb .remove-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 22px;
+            height: 22px;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .image-thumb:hover .remove-btn {
+            opacity: 1;
+        }
+
+        .image-thumb .remove-btn:hover {
+            background: var(--danger);
+        }
+
+        .image-thumb.dragging {
+            opacity: 0.5;
+        }
+
+        /* Add Image Button */
+        .add-image-btn {
+            width: 100%;
+            padding: 10px;
+            background: white;
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: var(--gray-600);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .add-image-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .toast {
+            background: white;
+            padding: 16px 20px;
+            border-radius: var(--radius-sm);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+            max-width: 360px;
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .toast.info {
+            border-left: 4px solid var(--secondary);
+        }
+
+        .toast i {
+            font-size: 1.2rem;
+        }
+
+        .toast.success i { color: var(--success); }
+        .toast.error i { color: var(--danger); }
+        .toast.info i { color: var(--secondary); }
+
+        .toast-message {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        /* Download Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: var(--radius);
+            padding: 32px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.3s;
+        }
+
+        .modal-overlay.show .modal {
+            transform: scale(1);
+        }
+
+        .modal-icon {
+            width: 72px;
+            height: 72px;
+            background: #ecfdf5;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+        }
+
+        .modal-icon i {
+            font-size: 2rem;
+            color: var(--success);
+        }
+
+        .modal h3 {
+            font-size: 1.25rem;
+            margin-bottom: 8px;
+        }
+
+        .modal p {
+            color: var(--gray-600);
+            margin-bottom: 24px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .modal-btn {
+            padding: 12px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .modal-btn.primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+        }
+
+        .modal-btn.primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .modal-btn.secondary {
+            background: white;
+            color: var(--gray-700);
+            border: 1px solid var(--gray-300);
+        }
+
+        .modal-btn.secondary:hover {
+            background: var(--gray-50);
+        }
+
+        /* Reset Button */
+        .reset-btn {
+            background: none;
+            border: none;
+            color: var(--gray-400);
+            cursor: pointer;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.2s;
+        }
+
+        .reset-btn:hover {
+            color: var(--danger);
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <h1><i class="fas fa-layer-group"></i> IDML Layout Engine</h1>
+            <p>Generate beautiful InDesign layouts from Word documents</p>
+        </header>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <!-- Upload Documents -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-file-word"></i> Word Documents</h3>
+                        <span class="document-count">0</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="upload-zone" id="docUploadZone">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                            <p>Drop Word files here</p>
+                            <p class="hint">or click to browse</p>
+                            <input type="file" id="docInput" accept=".docx,.doc" multiple>
+                        </div>
+                        <div class="file-list" id="docList"></div>
+                    </div>
+                </div>
+
+                <!-- Upload Template -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-file-code"></i> Reference Template</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="upload-zone" id="templateUploadZone">
+                            <i class="fas fa-file-import"></i>
+                            <p>Drop IDML template here</p>
+                            <p class="hint">or click to browse</p>
+                            <input type="file" id="templateInput" accept=".idml">
+                        </div>
+                        <div id="templateStatus" class="template-status empty" style="display: none;">
+                            <i class="fas fa-check-circle"></i>
+                            <span id="templateName">template.idml</span>
+                            <button class="delete-btn" onclick="deleteTemplate()">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings -->
+                <div class="card">
+                    <div class="card-header">
+                        <h3><i class="fas fa-cog"></i> Settings</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="setting-row">
+                            <span class="setting-label">Random Seed</span>
+                            <input type="number" class="setting-input" id="seedInput" placeholder="Auto" min="0">
+                        </div>
+                        <div class="setting-row">
+                            <span class="setting-label">Enable Variations</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="variationsToggle" checked>
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Generate Button -->
+                <button class="generate-btn" id="generateBtn" onclick="generateIDML()">
+                    <i class="fas fa-magic"></i>
+                    Generate IDML
+                </button>
+
+                <!-- Reset -->
+                <button class="reset-btn" onclick="resetSession()">
+                    <i class="fas fa-redo"></i>
+                    Reset All
+                </button>
+            </aside>
+
+            <!-- Sections Area -->
+            <main class="sections-container">
+                <div class="sections-header">
+                    <h2><i class="fas fa-th-large"></i> Content Sections</h2>
+                    <span class="section-count" id="sectionCount">0 sections</span>
+                </div>
+                <div class="sections-body" id="sectionsBody">
+                    <div class="empty-state" id="emptyState">
+                        <i class="fas fa-file-upload"></i>
+                        <h3>No documents yet</h3>
+                        <p>Upload Word documents to create sections</p>
+                    </div>
+                    <div class="sections-grid" id="sectionsGrid" style="display: none;"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Download Modal -->
+    <div class="modal-overlay" id="downloadModal">
+        <div class="modal">
+            <div class="modal-icon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h3>IDML Generated Successfully!</h3>
+            <p id="modalMessage">Your layout has been generated and is ready to download.</p>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="closeModal()">Close</button>
+                <a class="modal-btn primary" id="downloadLink" href="#" download>
+                    <i class="fas fa-download"></i> Download
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================================
+        // State Management
+        // ============================================================================
+        
+        let state = {
+            documents: [],
+            sections: [],
+            template: null,
+            settings: {
+                seed: null,
+                enable_variations: true
+            }
+        };
+
+        let draggedImage = null;
+        let draggedImageSection = null;
+
+        // ============================================================================
+        // Initialization
+        // ============================================================================
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSession();
+            setupEventListeners();
+        });
+
+        async function loadSession() {
+            try {
+                const response = await fetch('/api/session');
+                const data = await response.json();
+                if (data.success) {
+                    state = data.data;
+                    renderUI();
+                }
+            } catch (error) {
+                console.error('Failed to load session:', error);
+            }
+        }
+
+        function setupEventListeners() {
+            // Document upload
+            const docZone = document.getElementById('docUploadZone');
+            const docInput = document.getElementById('docInput');
+            
+            docZone.addEventListener('click', () => docInput.click());
+            docZone.addEventListener('dragover', handleDragOver);
+            docZone.addEventListener('dragleave', handleDragLeave);
+            docZone.addEventListener('drop', (e) => handleDrop(e, 'documents'));
+            docInput.addEventListener('change', (e) => uploadDocuments(e.target.files));
+
+            // Template upload
+            const templateZone = document.getElementById('templateUploadZone');
+            const templateInput = document.getElementById('templateInput');
+            
+            templateZone.addEventListener('click', () => templateInput.click());
+            templateZone.addEventListener('dragover', handleDragOver);
+            templateZone.addEventListener('dragleave', handleDragLeave);
+            templateZone.addEventListener('drop', (e) => handleDrop(e, 'template'));
+            templateInput.addEventListener('change', (e) => uploadTemplate(e.target.files[0]));
+
+            // Settings
+            document.getElementById('seedInput').addEventListener('change', updateSettings);
+            document.getElementById('variationsToggle').addEventListener('change', updateSettings);
+        }
+
+        // ============================================================================
+        // Drag & Drop Handlers
+        // ============================================================================
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function handleDrop(e, type) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            
+            const files = e.dataTransfer.files;
+            if (type === 'documents') {
+                uploadDocuments(files);
+            } else if (type === 'template') {
+                uploadTemplate(files[0]);
+            }
+        }
+
+        // ============================================================================
+        // API Functions
+        // ============================================================================
+
+        async function uploadDocuments(files) {
+            const formData = new FormData();
+            for (const file of files) {
+                if (file.name.endsWith('.docx') || file.name.endsWith('.doc')) {
+                    formData.append('files', file);
+                }
+            }
+
+            try {
+                const response = await fetch('/api/documents', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    state.documents = [...state.documents, ...data.uploaded];
+                    state.sections = data.sections;
+                    renderUI();
+                    showToast('success', `${data.uploaded.length} document(s) uploaded`);
+                } else {
+                    showToast('error', data.error);
+                }
+            } catch (error) {
+                showToast('error', 'Failed to upload documents');
+            }
+        }
+
+        async function deleteDocument(docId) {
+            try {
+                const response = await fetch(`/api/documents/${docId}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    state.documents = state.documents.filter(d => d.id !== docId);
+                    state.sections = data.sections;
+                    renderUI();
+                    showToast('info', 'Document removed');
+                }
+            } catch (error) {
+                showToast('error', 'Failed to delete document');
+            }
+        }
+
+        async function uploadTemplate(file) {
+            if (!file || !file.name.endsWith('.idml')) {
+                showToast('error', 'Please upload an IDML file');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            try {
+                const response = await fetch('/api/template', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    state.template = data.template;
+                    renderUI();
+                    showToast('success', 'Template uploaded');
+                } else {
+                    showToast('error', data.error);
+                }
+            } catch (error) {
+                showToast('error', 'Failed to upload template');
+            }
+        }
+
+        async function deleteTemplate() {
+            try {
+                const response = await fetch('/api/template', {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    state.template = null;
+                    renderUI();
+                    showToast('info', 'Template removed');
+                }
+            } catch (error) {
+                showToast('error', 'Failed to delete template');
+            }
+        }
+
+        async function uploadSectionImages(sectionId, files) {
+            const formData = new FormData();
+            for (const file of files) {
+                const ext = file.name.split('.').pop().toLowerCase();
+                if (['jpg', 'jpeg', 'png', 'tif', 'tiff'].includes(ext)) {
+                    formData.append('files', file);
+                }
+            }
+
+            try {
+                const response = await fetch(`/api/sections/${sectionId}/images`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    const section = state.sections.find(s => s.id === sectionId);
+                    if (section) {
+                        section.images = data.section.images;
+                    }
+                    renderUI();
+                    showToast('success', `${data.uploaded.length} image(s) added`);
+                } else {
+                    showToast('error', data.error);
+                }
+            } catch (error) {
+                showToast('error', 'Failed to upload images');
+            }
+        }
+
+        async function deleteSectionImage(sectionId, imageId) {
+            try {
+                const response = await fetch(`/api/sections/${sectionId}/images/${imageId}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    const section = state.sections.find(s => s.id === sectionId);
+                    if (section) {
+                        section.images = data.section.images;
+                    }
+                    renderUI();
+                }
+            } catch (error) {
+                showToast('error', 'Failed to delete image');
+            }
+        }
+
+        async function moveImage(imageId, targetSectionId) {
+            try {
+                const response = await fetch(`/api/images/${imageId}/move`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ target_section_id: targetSectionId })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    state.sections = data.sections;
+                    renderUI();
+                    showToast('success', 'Image moved');
+                }
+            } catch (error) {
+                showToast('error', 'Failed to move image');
+            }
+        }
+
+        async function updateSettings() {
+            const seed = document.getElementById('seedInput').value;
+            const enableVariations = document.getElementById('variationsToggle').checked;
+
+            state.settings = {
+                seed: seed ? parseInt(seed) : null,
+                enable_variations: enableVariations
+            };
+
+            try {
+                await fetch('/api/settings', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(state.settings)
+                });
+            } catch (error) {
+                console.error('Failed to save settings');
+            }
+        }
+
+        async function generateIDML() {
+            const btn = document.getElementById('generateBtn');
+            btn.innerHTML = '<i class="fas fa-spinner spinner"></i> Generating...';
+            btn.classList.add('loading');
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/generate', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showDownloadModal(data.download_url, data.output_filename);
+                } else {
+                    showToast('error', data.error);
+                }
+            } catch (error) {
+                showToast('error', 'Failed to generate IDML');
+            } finally {
+                btn.innerHTML = '<i class="fas fa-magic"></i> Generate IDML';
+                btn.classList.remove('loading');
+                btn.disabled = false;
+            }
+        }
+
+        async function resetSession() {
+            if (!confirm('Are you sure you want to reset? All uploads will be deleted.')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/session/reset', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    state = {
+                        documents: [],
+                        sections: [],
+                        template: null,
+                        settings: { seed: null, enable_variations: true }
+                    };
+                    renderUI();
+                    showToast('info', 'Session reset');
+                }
+            } catch (error) {
+                showToast('error', 'Failed to reset session');
+            }
+        }
+
+        async function updateSectionTitle(sectionId, newTitle) {
+            const docId = state.sections.find(s => s.id === sectionId)?.document_id;
+            if (!docId) return;
+
+            try {
+                const response = await fetch(`/api/documents/${docId}/title`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ title: newTitle })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    const section = state.sections.find(s => s.id === sectionId);
+                    const doc = state.documents.find(d => d.id === docId);
+                    if (section) section.title = newTitle;
+                    if (doc) doc.title = newTitle;
+                }
+            } catch (error) {
+                showToast('error', 'Failed to update title');
+            }
+        }
+
+        // ============================================================================
+        // UI Rendering
+        // ============================================================================
+
+        function renderUI() {
+            renderDocumentList();
+            renderTemplate();
+            renderSections();
+            renderSettings();
+            updateGenerateButton();
+        }
+
+        function renderDocumentList() {
+            const list = document.getElementById('docList');
+            const countBadge = document.querySelector('.document-count');
+            
+            countBadge.textContent = state.documents.length;
+            
+            if (state.documents.length === 0) {
+                list.innerHTML = '';
+                return;
+            }
+
+            list.innerHTML = state.documents.map(doc => `
+                <div class="file-item">
+                    <div class="file-info">
+                        <i class="fas fa-file-word"></i>
+                        <span class="file-name" title="${doc.original_filename}">${doc.original_filename}</span>
+                    </div>
+                    <button class="delete-btn" onclick="deleteDocument('${doc.id}')">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function renderTemplate() {
+            const uploadZone = document.getElementById('templateUploadZone');
+            const status = document.getElementById('templateStatus');
+            const templateName = document.getElementById('templateName');
+            
+            if (state.template) {
+                uploadZone.style.display = 'none';
+                status.style.display = 'flex';
+                status.classList.remove('empty');
+                templateName.textContent = state.template.original_filename || state.template.filename;
+            } else {
+                uploadZone.style.display = 'block';
+                status.style.display = 'none';
+            }
+        }
+
+        function renderSections() {
+            const emptyState = document.getElementById('emptyState');
+            const grid = document.getElementById('sectionsGrid');
+            const countBadge = document.getElementById('sectionCount');
+            
+            countBadge.textContent = `${state.sections.length} section${state.sections.length !== 1 ? 's' : ''}`;
+            
+            if (state.sections.length === 0) {
+                emptyState.style.display = 'block';
+                grid.style.display = 'none';
+                return;
+            }
+
+            emptyState.style.display = 'none';
+            grid.style.display = 'grid';
+            
+            grid.innerHTML = state.sections.map(section => `
+                <div class="section-card" 
+                     data-section-id="${section.id}"
+                     ondragover="handleSectionDragOver(event)"
+                     ondragleave="handleSectionDragLeave(event)"
+                     ondrop="handleSectionDrop(event, '${section.id}')">
+                    <div class="section-card-header">
+                        <div class="section-title" id="title-${section.id}">
+                            <i class="fas fa-file-alt"></i>
+                            <span ondblclick="editTitle('${section.id}')">${escapeHtml(section.title)}</span>
+                        </div>
+                        <div class="section-actions">
+                            <button onclick="editTitle('${section.id}')" title="Edit title">
+                                <i class="fas fa-pen"></i>
+                            </button>
+                            <button class="delete" onclick="deleteDocument('${section.document_id}')" title="Remove">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="section-card-body">
+                        ${renderSectionImages(section)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderSectionImages(section) {
+            const images = section.images || [];
+            
+            if (images.length === 0) {
+                return `
+                    <div class="image-drop-zone" 
+                         onclick="triggerImageUpload('${section.id}')"
+                         ondragover="handleDragOver(event)"
+                         ondragleave="handleDragLeave(event)"
+                         ondrop="handleImageDrop(event, '${section.id}')">
+                        <i class="fas fa-image"></i>
+                        <p>Drop images here</p>
+                        <p class="hint">or click to browse</p>
+                    </div>
+                    <input type="file" id="img-input-${section.id}" accept="image/*" multiple 
+                           style="display:none" onchange="handleImageInput(event, '${section.id}')">
+                `;
+            }
+
+            return `
+                <div class="images-container"
+                     ondragover="handleDragOver(event)"
+                     ondragleave="handleDragLeave(event)"
+                     ondrop="handleImageDrop(event, '${section.id}')">
+                    <div class="images-grid">
+                        ${images.map(img => `
+                            <div class="image-thumb" 
+                                 draggable="true"
+                                 ondragstart="handleImageDragStart(event, '${img.id}', '${section.id}')"
+                                 ondragend="handleImageDragEnd(event)">
+                                <img src="/api/images/${img.filename}" alt="${img.original_filename}">
+                                <button class="remove-btn" onclick="deleteSectionImage('${section.id}', '${img.id}')">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <button class="add-image-btn" onclick="triggerImageUpload('${section.id}')">
+                        <i class="fas fa-plus"></i> Add Image
+                    </button>
+                </div>
+                <input type="file" id="img-input-${section.id}" accept="image/*" multiple 
+                       style="display:none" onchange="handleImageInput(event, '${section.id}')">
+            `;
+        }
+
+        function renderSettings() {
+            document.getElementById('seedInput').value = state.settings.seed || '';
+            document.getElementById('variationsToggle').checked = state.settings.enable_variations;
+        }
+
+        function updateGenerateButton() {
+            const btn = document.getElementById('generateBtn');
+            const canGenerate = state.documents.length > 0 && state.template;
+            btn.disabled = !canGenerate;
+        }
+
+        // ============================================================================
+        // Image Drag & Drop for Sections
+        // ============================================================================
+
+        function handleImageDragStart(e, imageId, sectionId) {
+            draggedImage = imageId;
+            draggedImageSection = sectionId;
+            e.target.classList.add('dragging');
+            e.dataTransfer.effectAllowed = 'move';
+        }
+
+        function handleImageDragEnd(e) {
+            e.target.classList.remove('dragging');
+            draggedImage = null;
+            draggedImageSection = null;
+            
+            // Remove drag-over from all sections
+            document.querySelectorAll('.section-card').forEach(card => {
+                card.classList.remove('drag-over');
+            });
+        }
+
+        function handleSectionDragOver(e) {
+            e.preventDefault();
+            if (draggedImage) {
+                e.currentTarget.classList.add('drag-over');
+            }
+        }
+
+        function handleSectionDragLeave(e) {
+            e.currentTarget.classList.remove('drag-over');
+        }
+
+        function handleSectionDrop(e, targetSectionId) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+            
+            if (draggedImage && draggedImageSection !== targetSectionId) {
+                moveImage(draggedImage, targetSectionId);
+            }
+            
+            draggedImage = null;
+            draggedImageSection = null;
+        }
+
+        function handleImageDrop(e, sectionId) {
+            e.preventDefault();
+            e.stopPropagation();
+            e.currentTarget.classList.remove('drag-over');
+            
+            // If dragging from another section
+            if (draggedImage && draggedImageSection !== sectionId) {
+                moveImage(draggedImage, sectionId);
+                return;
+            }
+            
+            // If dropping files
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                uploadSectionImages(sectionId, files);
+            }
+        }
+
+        function triggerImageUpload(sectionId) {
+            document.getElementById(`img-input-${sectionId}`).click();
+        }
+
+        function handleImageInput(e, sectionId) {
+            const files = e.target.files;
+            if (files.length > 0) {
+                uploadSectionImages(sectionId, files);
+            }
+            e.target.value = ''; // Reset input
+        }
+
+        // ============================================================================
+        // Title Editing
+        // ============================================================================
+
+        function editTitle(sectionId) {
+            const section = state.sections.find(s => s.id === sectionId);
+            if (!section) return;
+            
+            const container = document.getElementById(`title-${sectionId}`);
+            const currentTitle = section.title;
+            
+            container.innerHTML = `
+                <input type="text" value="${escapeHtml(currentTitle)}" 
+                       onblur="saveTitle('${sectionId}', this.value)"
+                       onkeydown="handleTitleKeydown(event, '${sectionId}', this.value)"
+                       autofocus>
+            `;
+            
+            container.querySelector('input').focus();
+            container.querySelector('input').select();
+        }
+
+        function saveTitle(sectionId, newTitle) {
+            newTitle = newTitle.trim();
+            if (newTitle) {
+                updateSectionTitle(sectionId, newTitle);
+            }
+            renderSections();
+        }
+
+        function handleTitleKeydown(e, sectionId, value) {
+            if (e.key === 'Enter') {
+                e.target.blur();
+            } else if (e.key === 'Escape') {
+                renderSections();
+            }
+        }
+
+        // ============================================================================
+        // Toast & Modal
+        // ============================================================================
+
+        function showToast(type, message) {
+            const container = document.getElementById('toastContainer');
+            const icons = {
+                success: 'fa-check-circle',
+                error: 'fa-exclamation-circle',
+                info: 'fa-info-circle'
+            };
+            
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.innerHTML = `
+                <i class="fas ${icons[type]}"></i>
+                <span class="toast-message">${escapeHtml(message)}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        function showDownloadModal(downloadUrl, filename) {
+            const modal = document.getElementById('downloadModal');
+            const downloadLink = document.getElementById('downloadLink');
+            
+            downloadLink.href = downloadUrl;
+            downloadLink.download = filename;
+            
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('downloadModal').classList.remove('show');
+        }
+
+        // ============================================================================
+        // Utility Functions
+        // ============================================================================
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+    </script>
+</body>
+</html>
