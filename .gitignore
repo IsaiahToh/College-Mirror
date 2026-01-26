@@ -125,6 +125,13 @@ output/
 *.idml
 !examples/*.idml
 
+# XML files folder (extracted IDML for reference - not needed in repo)
+XML files/
+
+# Webapp uploads and outputs (user-generated content)
+webapp/uploads/
+webapp/outputs/
+
 # Temporary files
 tmp/
 temp/
