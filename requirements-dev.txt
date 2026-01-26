@@ -1,0 +1,30 @@
+# Requirements for development
+# Install with: pip install -r requirements-dev.txt
+
+# Core dependencies (also in pyproject.toml)
+lxml>=4.9.0
+python-docx>=0.8.11
+Pillow>=9.0.0
+
+# Development tools
+pytest>=7.0.0
+pytest-cov>=4.0.0
+pytest-xdist>=3.0.0  # Parallel test execution
+
+# Code quality
+black>=23.0.0
+isort>=5.12.0
+flake8>=6.0.0
+mypy>=1.0.0
+
+# Type stubs
+types-Pillow
+lxml-stubs
+
+# Documentation
+sphinx>=6.0.0
+sphinx-rtd-theme>=1.2.0
+
+# Debugging
+ipython>=8.0.0
+ipdb>=0.13.0

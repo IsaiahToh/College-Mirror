@@ -1,0 +1,6 @@
+# Core dependencies only
+# Install with: pip install -r requirements.txt
+
+lxml>=4.9.0
+python-docx>=0.8.11
+Pillow>=9.0.0
