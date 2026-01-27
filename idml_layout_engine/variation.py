@@ -42,6 +42,7 @@ from .models import (
     LayoutTemplate,
     ContentBlock,
     ContentSection,
+    ContentType,
     SlotAssignment,
     PageInstance,
 )
@@ -484,6 +485,8 @@ class SlotAssigner:
         """
         Assign content sections to slots.
         
+        Each section gets assigned to its own spread to avoid overlapping.
+        
         Args:
             sections: List of content sections to assign
             
@@ -495,8 +498,13 @@ class SlotAssigner:
         # Track which slots are used
         used_slots: Set[str] = set()
         
-        for section in sections:
-            section_assignments = self._assign_section(section, used_slots)
+        # Get available spread indices
+        available_spreads = sorted(set(s.spread_index for s in self.template.slots))
+        
+        for section_idx, section in enumerate(sections):
+            # Assign each section to its own spread
+            target_spread = available_spreads[section_idx] if section_idx < len(available_spreads) else None
+            section_assignments = self._assign_section(section, used_slots, target_spread)
             assignments.update(section_assignments)
             used_slots.update(section_assignments.keys())
         
@@ -506,6 +514,7 @@ class SlotAssigner:
         self,
         section: ContentSection,
         used_slots: Set[str],
+        target_spread: Optional[int] = None,
     ) -> Dict[str, SlotAssignment]:
         """
         Assign a single content section to slots.
@@ -513,15 +522,16 @@ class SlotAssigner:
         Args:
             section: The content section to assign
             used_slots: Set of already-used slot IDs
+            target_spread: Target spread index for this section (None = any spread)
             
         Returns:
             Dictionary of assignments for this section
         """
         assignments = {}
         
-        # Assign title
+        # Assign title - prefer target spread if specified
         title_slot = self._find_available_slot(
-            SlotType.TITLE, used_slots, prefer_column=0
+            SlotType.TITLE, used_slots, prefer_column=0, target_spread=target_spread
         )
         if title_slot:
             assignments[title_slot.slot_id] = SlotAssignment(
@@ -530,36 +540,27 @@ class SlotAssigner:
             )
             used_slots.add(title_slot.slot_id)
         
-        # Assign quotes
-        quotes = section.get_quotes()
-        for quote in quotes:
-            quote_slot = self._find_available_slot(
-                SlotType.QUOTE, used_slots
-            )
-            if quote_slot:
-                assignments[quote_slot.slot_id] = SlotAssignment(
-                    slot=quote_slot,
-                    content=quote,
-                )
-                used_slots.add(quote_slot.slot_id)
+        # Find the MAIN body slot - the largest paragraph slot on target spread
+        # This slot's story (possibly threaded) will receive ALL body content
+        main_body_slot = self._find_main_body_slot(used_slots, target_spread)
         
-        # Assign body paragraphs
+        # Assign all body paragraphs (includes subheaders and quote placeholders)
+        # to the same slot's story - they will flow through threaded frames
         body_paragraphs = section.get_body_paragraphs()
-        for para in body_paragraphs:
-            para_slot = self._find_available_slot(
-                SlotType.PARAGRAPH, used_slots
-            )
-            if para_slot:
-                assignments[para_slot.slot_id] = SlotAssignment(
-                    slot=para_slot,
-                    content=para,
-                )
-                used_slots.add(para_slot.slot_id)
         
-        # Assign images
+        if main_body_slot and body_paragraphs:
+            # Create a single assignment with all paragraphs
+            assignment = SlotAssignment(slot=main_body_slot, content=body_paragraphs[0])
+            for para in body_paragraphs[1:]:
+                assignment.add_content(para)
+            assignments[main_body_slot.slot_id] = assignment
+            # Mark this slot as used
+            used_slots.add(main_body_slot.slot_id)
+        
+        # Assign images - prefer target spread
         for idx, image_path in enumerate(section.image_paths):
             image_slot = self._find_available_slot(
-                SlotType.IMAGE, used_slots
+                SlotType.IMAGE, used_slots, target_spread=target_spread
             )
             if image_slot:
                 # Create a pseudo content block for the image
@@ -568,7 +569,7 @@ class SlotAssigner:
                     content_type=ContentType.BODY,  # Will be treated specially
                     text="",
                     section_title=section.title.text,
-                    sequence_index=-1,  # Not part of text sequence
+                    sequence_index=1000 + idx,  # High index for images (not part of text sequence)
                     image_path=image_path,
                 )
                 assignments[image_slot.slot_id] = SlotAssignment(
@@ -579,21 +580,73 @@ class SlotAssigner:
         
         return assignments
     
+    def _find_main_body_slot(
+        self,
+        used_slots: Set[str],
+        target_spread: Optional[int] = None,
+    ) -> Optional[Slot]:
+        """
+        Find the main body slot - the largest paragraph slot with a threaded story.
+        
+        This slot will receive all body content, which flows through
+        the threaded frame chain.
+        
+        Args:
+            used_slots: Set of already-used slot IDs
+            target_spread: Target spread index (None = any spread)
+        
+        Returns:
+            The best slot for body content, or None if unavailable
+        """
+        candidates = [
+            slot for slot in self.template.get_slots_by_type(SlotType.PARAGRAPH)
+            if slot.slot_id not in used_slots
+        ]
+        
+        # Filter by target spread if specified
+        if target_spread is not None:
+            spread_candidates = [s for s in candidates if s.spread_index == target_spread]
+            if spread_candidates:
+                candidates = spread_candidates
+        
+        if not candidates:
+            return None
+        
+        # Prefer slots on earlier spreads, then by size (largest first)
+        def priority_key(slot: Slot) -> Tuple[int, float]:
+            # Negative height so larger slots come first
+            return (slot.spread_index, -slot.geometry.height)
+        
+        candidates.sort(key=priority_key)
+        return candidates[0]
+    
     def _find_available_slot(
         self,
         slot_type: SlotType,
         used_slots: Set[str],
         prefer_column: Optional[int] = None,
         prefer_position: Optional[VerticalPosition] = None,
+        target_spread: Optional[int] = None,
     ) -> Optional[Slot]:
         """
         Find an available slot of the given type.
+        
+        Slots are prioritized by their spatial position:
+        1. Target spread (if specified)
+        2. Spread index (earlier spreads first)
+        3. For TITLE slots: prefer larger slots (styled titles are typically bigger)
+        4. Y position (top to bottom)
+        5. X position (left to right)
+        
+        This ensures content fills the page top-to-bottom before
+        moving to the next page.
         
         Args:
             slot_type: Type of slot to find
             used_slots: Set of already-used slot IDs
             prefer_column: Preferred column (optional)
             prefer_position: Preferred vertical position (optional)
+            target_spread: Target spread index (optional)
             
         Returns:
             Available Slot or None if none available
@@ -603,14 +656,28 @@ class SlotAssigner:
             if slot.slot_id not in used_slots
         ]
         
+        # Filter by target spread if specified
+        if target_spread is not None:
+            spread_candidates = [s for s in candidates if s.spread_index == target_spread]
+            if spread_candidates:
+                candidates = spread_candidates
+        
         if not candidates:
             return None
         
-        # Sort by preference
-        def preference_key(slot: Slot) -> Tuple[int, int]:
-            col_score = 0 if prefer_column is None or slot.column_index == prefer_column else 1
-            pos_score = 0 if prefer_position is None or slot.vertical_position == prefer_position else 1
-            return (col_score, pos_score)
+        # Sort by spatial position: spread index, then Y, then X
+        # This ensures we fill content top-to-bottom, left-to-right
+        def spatial_key(slot: Slot) -> Tuple[int, float, float]:
+            return (slot.spread_index, slot.geometry.y, slot.geometry.x)
         
-        candidates.sort(key=preference_key)
+        # For TITLE slots, prefer larger slots (styled titles are bigger)
+        # This ensures we use the main styled title instead of small headers
+        if slot_type == SlotType.TITLE:
+            def title_key(slot: Slot) -> Tuple[int, float]:
+                # Sort by spread_index first, then by -height (larger first)
+                return (slot.spread_index, -slot.geometry.height)
+            candidates.sort(key=title_key)
+        else:
+            candidates.sort(key=spatial_key)
+        
         return candidates[0]

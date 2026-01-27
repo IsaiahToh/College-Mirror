@@ -185,7 +185,7 @@ def sample_content_blocks():
         ContentBlock(
             content_id="quote_1",
             content_type=ContentType.QUOTE,
-            text=""Design is not just what it looks like. Design is how it works."",
+            text="Design is not just what it looks like. Design is how it works.",
             section_title="The Main Article Title",
             sequence_index=3,
         ),

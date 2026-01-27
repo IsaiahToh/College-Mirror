@@ -43,6 +43,7 @@ class SlotType(Enum):
     how it should be rendered.
     """
     TITLE = auto()      # Section title frame
+    SUBHEADER = auto()  # Subheading frame
     PARAGRAPH = auto()  # Body text paragraph frame
     QUOTE = auto()      # Pull quote or highlighted text frame
     IMAGE = auto()      # Image/graphic frame
@@ -263,6 +264,7 @@ class Slot:
         is_fixed: If True, this slot cannot participate in variations
         group_id: ID for grouping interchangeable slots (None if not swappable)
         original_frame_id: The Self attribute from the original IDML frame
+        spread_index: Index of the spread this slot is on (for ordering)
         
     Invariants:
         - slot_id is unique within a LayoutTemplate
@@ -280,6 +282,8 @@ class Slot:
     is_fixed: bool = False
     group_id: Optional[str] = None
     original_frame_id: Optional[str] = None
+    spread_index: int = 0
+    parent_story_id: Optional[str] = None  # For grouping threaded text frames
     
     def __post_init__(self):
         """Validate slot invariants."""
@@ -553,6 +557,87 @@ class ContentSection:
     body_blocks: List[ContentBlock] = field(default_factory=list)
     image_paths: List[str] = field(default_factory=list)
     source_file: Optional[str] = None
+    quote_count: int = 0  # Number of quote placeholders to generate
+    
+    def add_quote_placeholders(self, count: int, seed: Optional[int] = None) -> None:
+        """
+        Add placeholder quote blocks at random positions in the body.
+        
+        Quotes are distributed evenly throughout the body content,
+        with some randomness for visual variety.
+        
+        Args:
+            count: Number of quote placeholders to add
+            seed: Random seed for reproducibility
+        """
+        import random
+        rng = random.Random(seed)
+        
+        self.quote_count = count
+        if count <= 0 or not self.body_blocks:
+            return
+        
+        # Get positions of body paragraphs (not subheaders - insert after body text)
+        body_indices = [
+            i for i, block in enumerate(self.body_blocks) 
+            if block.content_type == ContentType.BODY
+        ]
+        
+        if not body_indices:
+            # No body paragraphs, just append at end
+            for i in range(count):
+                self._add_single_quote(i, len(self.body_blocks))
+            return
+        
+        # Choose positions spread across the body paragraphs
+        # Divide body paragraphs into (count+1) sections and pick one from each section
+        num_body = len(body_indices)
+        insert_positions = []
+        
+        if count >= num_body:
+            # More quotes than body paragraphs - distribute evenly
+            for i in range(count):
+                pos = body_indices[i % num_body] + 1
+                insert_positions.append(pos)
+        else:
+            # Divide into sections and pick from each
+            section_size = num_body / (count + 1)
+            for i in range(count):
+                # Target the middle of each section
+                section_start = int((i + 1) * section_size) - 1
+                section_start = max(0, min(section_start, num_body - 1))
+                
+                # Pick the body paragraph index
+                body_idx = body_indices[section_start]
+                # Insert AFTER this body paragraph
+                insert_positions.append(body_idx + 1)
+        
+        # Sort positions in reverse order so insertions don't shift indices
+        insert_positions.sort(reverse=True)
+        
+        # Insert quotes at calculated positions
+        for i, pos in enumerate(insert_positions):
+            quote_block = ContentBlock(
+                content_id=f"{self.section_id}_quote_{count - 1 - i}",
+                content_type=ContentType.QUOTE,
+                text="Sample quote",
+                section_title=self.title.text if self.title else "",
+                sequence_index=pos,
+                source_file=self.source_file,
+            )
+            self.body_blocks.insert(pos, quote_block)
+    
+    def _add_single_quote(self, index: int, position: int) -> None:
+        """Add a single quote at the specified position."""
+        quote_block = ContentBlock(
+            content_id=f"{self.section_id}_quote_{index}",
+            content_type=ContentType.QUOTE,
+            text="Sample quote",
+            section_title=self.title.text if self.title else "",
+            sequence_index=position,
+            source_file=self.source_file,
+        )
+        self.body_blocks.insert(position, quote_block)
     
     @property
     def all_blocks(self) -> List[ContentBlock]:
@@ -564,8 +649,8 @@ class ContentSection:
         return [b for b in self.body_blocks if b.content_type == ContentType.QUOTE]
     
     def get_body_paragraphs(self) -> List[ContentBlock]:
-        """Get all non-quote body blocks."""
-        return [b for b in self.body_blocks if b.content_type == ContentType.BODY]
+        """Get all body, subheader, and quote blocks for the text flow."""
+        return [b for b in self.body_blocks if b.content_type in (ContentType.BODY, ContentType.SUBHEADER, ContentType.QUOTE)]
     
     def to_dict(self) -> Dict:
         """Serialize to dictionary."""
@@ -586,18 +671,34 @@ class ContentSection:
 @dataclass
 class SlotAssignment:
     """
-    Assignment of a content block to a slot.
+    Assignment of content block(s) to a slot.
     
     Represents the binding between content and layout position.
+    A slot can receive multiple content blocks (for threaded stories).
     """
     slot: Slot
-    content: ContentBlock
+    content: ContentBlock = None  # Primary content block
+    content_blocks: List[ContentBlock] = field(default_factory=list)  # All content blocks for this slot
+    
+    def __post_init__(self):
+        """Ensure content_blocks is populated."""
+        if self.content and not self.content_blocks:
+            self.content_blocks = [self.content]
+        elif self.content_blocks and not self.content:
+            self.content = self.content_blocks[0] if self.content_blocks else None
+    
+    def add_content(self, content: ContentBlock) -> None:
+        """Add a content block to this assignment."""
+        self.content_blocks.append(content)
+        if self.content is None:
+            self.content = content
     
     def to_dict(self) -> Dict:
         """Serialize to dictionary."""
         return {
             "slot_id": self.slot.slot_id,
-            "content_id": self.content.content_id,
+            "content_id": self.content.content_id if self.content else None,
+            "content_count": len(self.content_blocks),
         }
 
 

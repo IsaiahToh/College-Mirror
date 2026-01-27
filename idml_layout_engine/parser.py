@@ -156,6 +156,7 @@ class RawFrame:
     has_image_content: bool = False
     page_index: int = 0              # Which page in the spread (0 or 1)
     spread_index: int = 0            # Which spread this frame is on
+    max_font_size: float = 0.0       # Maximum font size in points (for title detection)
     
     # Additional metadata from XML
     xml_element_tag: str = ""
@@ -492,36 +493,56 @@ class IDMLParser:
         InDesign uses various geometry representations:
         - GeometricBounds: "top left bottom right" in parent coordinates
         - ItemTransform: Transform matrix for positioning
-        - PathGeometry: For complex shapes
+        - PathGeometry: For complex shapes (parsed from PathPointType anchors)
         
-        We use GeometricBounds as the primary source.
+        We use GeometricBounds as the primary source, falling back to PathGeometry.
         """
         bounds_str = elem.get('GeometricBounds')
-        if not bounds_str:
-            # Try to find in child Properties
-            props = elem.find('.//PathGeometry')
-            if props is not None:
-                # Would need to parse path - fall back to None
-                return None
-            return None
+        if bounds_str:
+            try:
+                parts = bounds_str.split()
+                if len(parts) == 4:
+                    top, left, bottom, right = map(float, parts)
+                    width = right - left
+                    height = bottom - top
+                    
+                    if width > 0 and height > 0:
+                        return FrameGeometry(x=left, y=top, width=width, height=height)
+            except (ValueError, IndexError) as e:
+                logger.warning(f"Could not parse GeometricBounds: {bounds_str}, error: {e}")
         
-        try:
-            parts = bounds_str.split()
-            if len(parts) != 4:
-                return None
-            
-            top, left, bottom, right = map(float, parts)
-            width = right - left
-            height = bottom - top
-            
-            if width <= 0 or height <= 0:
-                return None
-            
-            return FrameGeometry(x=left, y=top, width=width, height=height)
-            
-        except (ValueError, IndexError) as e:
-            logger.warning(f"Could not parse geometry: {bounds_str}, error: {e}")
-            return None
+        # Fall back to PathGeometry - extract bounding box from path points
+        path_geom = elem.find('.//PathGeometry')
+        if path_geom is not None:
+            path_points = path_geom.findall('.//PathPointType')
+            if path_points:
+                try:
+                    # Parse all anchor points to find bounding box
+                    x_coords = []
+                    y_coords = []
+                    for pp in path_points:
+                        anchor = pp.get('Anchor', '')
+                        if anchor:
+                            parts = anchor.split()
+                            if len(parts) == 2:
+                                x_coords.append(float(parts[0]))
+                                y_coords.append(float(parts[1]))
+                    
+                    if x_coords and y_coords:
+                        min_x = min(x_coords)
+                        max_x = max(x_coords)
+                        min_y = min(y_coords)
+                        max_y = max(y_coords)
+                        
+                        width = max_x - min_x
+                        height = max_y - min_y
+                        
+                        if width > 0 and height > 0:
+                            return FrameGeometry(x=min_x, y=min_y, width=width, height=height)
+                except (ValueError, IndexError) as e:
+                    logger.warning(f"Could not parse PathGeometry: {e}")
+        
+        return None
     
     def _parse_text_frame(
         self, 
@@ -542,6 +563,15 @@ class IDMLParser:
         if not frame_id:
             return None
         
+        # Skip continuation frames in threaded stories
+        # Only create a slot for the FIRST frame in a chain
+        # Continuation frames have PreviousTextFrame != "n"
+        prev_frame = text_frame.get('PreviousTextFrame', 'n')
+        if prev_frame != 'n':
+            # This is a continuation frame, skip it
+            # Content will flow from the first frame automatically
+            return None
+        
         geometry = self._parse_geometry_from_element(text_frame)
         if geometry is None:
             return None
@@ -552,6 +582,9 @@ class IDMLParser:
         
         # Extract paragraph styles from the linked story if available
         paragraph_styles = self._extract_paragraph_styles_from_story(parent_story)
+        
+        # Extract max font size for title detection
+        max_font_size = self._extract_max_font_size_from_story(parent_story)
         
         return RawFrame(
             frame_id=frame_id,
@@ -564,6 +597,7 @@ class IDMLParser:
             spread_index=spread_index,
             xml_element_tag='TextFrame',
             content_type=content_type,
+            max_font_size=max_font_size,
         )
     
     def _parse_rectangle(
@@ -650,6 +684,44 @@ class IDMLParser:
         
         return styles
     
+    def _extract_max_font_size_from_story(
+        self, 
+        story_id: Optional[str]
+    ) -> float:
+        """
+        Extract the maximum font size from a story.
+        
+        Large font sizes (>= 36pt) indicate title text.
+        """
+        if not story_id or self.zip_file is None:
+            return 0.0
+        
+        story_files = [
+            n for n in self.zip_file.namelist()
+            if n.startswith('Stories/') and n.endswith('.xml')
+        ]
+        
+        max_size = 0.0
+        for story_file in story_files:
+            try:
+                story = self._read_xml(story_file)
+                story_elem = story.find('.//Story')
+                if story_elem is not None and story_elem.get('Self') == story_id:
+                    # Extract PointSize from CharacterStyleRange elements
+                    for csr in story.findall('.//CharacterStyleRange'):
+                        point_size = csr.get('PointSize')
+                        if point_size:
+                            try:
+                                size = float(point_size)
+                                max_size = max(max_size, size)
+                            except ValueError:
+                                pass
+                    break
+            except Exception as e:
+                logger.debug(f"Could not read story {story_file} for font size: {e}")
+        
+        return max_size
+    
     def _classify_frames(self) -> List[Slot]:
         """
         Classify raw frames into typed slots.
@@ -730,6 +802,8 @@ class IDMLParser:
             is_fixed=is_fixed,
             group_id=None,  # Will be assigned in _group_slots
             original_frame_id=frame.frame_id,
+            spread_index=frame.spread_index,
+            parent_story_id=frame.parent_story_id,
         )
     
     def _determine_slot_type(self, frame: RawFrame) -> Optional[SlotType]:
@@ -738,8 +812,9 @@ class IDMLParser:
         
         Priority:
         1. Graphic frames → IMAGE
-        2. Style-based classification for text frames
-        3. Default to PARAGRAPH for unclassified text frames
+        2. Large font size (>= 36pt) → TITLE (for styled titles without named styles)
+        3. Style-based classification for text frames
+        4. Default to PARAGRAPH for unclassified text frames
         """
         # Graphic frames
         if frame.is_graphic_frame:
@@ -750,6 +825,11 @@ class IDMLParser:
         
         # Text frames - classify by style
         if frame.is_text_frame:
+            # Check for large font size first (title indicator)
+            # Font size >= 36pt typically indicates a title even without named style
+            if frame.max_font_size >= 36.0:
+                return SlotType.TITLE
+            
             for style in frame.applied_paragraph_styles:
                 # Clean up style name (remove prefix like "ParagraphStyle/")
                 clean_style = style.split('/')[-1] if '/' in style else style

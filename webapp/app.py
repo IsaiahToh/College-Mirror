@@ -616,6 +616,8 @@ def generate_idml():
         
         # Build image mapping (section title -> list of image paths)
         image_mapping = {}
+        # Build quote count mapping (section title -> quote count)
+        quote_counts = {}
         for section in data["sections"]:
             section_images = [
                 str(session_folder / "images" / img["filename"])
@@ -623,6 +625,9 @@ def generate_idml():
             ]
             if section_images:
                 image_mapping[section["title"]] = section_images
+            # Store quote count per section title
+            if section.get("quote_count", 0) > 0:
+                quote_counts[section["title"]] = section.get("quote_count", 0)
         
         # Create output filename
         output_filename = f"output_{datetime.now().strftime('%Y%m%d_%H%M%S')}.idml"
@@ -644,6 +649,7 @@ def generate_idml():
             reference_idml=template_path,
             content_docs=document_paths,
             image_mapping=image_mapping,
+            quote_counts=quote_counts,
             config=config,
         )
         

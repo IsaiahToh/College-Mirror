@@ -101,6 +101,7 @@ class LayoutEngine:
         reference_idml: str | Path,
         content_docs: Optional[List[str | Path]] = None,
         image_mapping: Optional[Dict[str, str | List[str]]] = None,
+        quote_counts: Optional[Dict[str, int]] = None,
         variation_seed: Optional[int] = None,
         config: Optional[LayoutEngineConfig] = None,
     ):
@@ -111,12 +112,19 @@ class LayoutEngine:
             reference_idml: Path to the reference IDML file
             content_docs: List of paths to Word documents
             image_mapping: Mapping of section titles to image paths
+            quote_counts: Mapping of section titles to quote counts
             variation_seed: Random seed for variations (overrides config)
             config: Configuration object (optional)
         """
         self.reference_idml = Path(reference_idml)
         self.content_docs = [Path(p) for p in (content_docs or [])]
         self.image_mapping = image_mapping or {}
+        self.quote_counts = quote_counts or {}
+        
+        # Configuration
+        self.config = config or LayoutEngineConfig()
+        if variation_seed is not None:
+            self.config.variation_seed = variation_seed
         
         # Configuration
         self.config = config or LayoutEngineConfig()
@@ -205,6 +213,7 @@ class LayoutEngine:
         - Title (first paragraph)
         - Body blocks (remaining paragraphs)
         - Associated images
+        - Quote placeholders (based on quote_counts mapping)
         
         Returns:
             List of ContentSection objects
@@ -226,6 +235,22 @@ class LayoutEngine:
             docx_paths=self.content_docs,
             image_mapping=self.image_mapping,
         )
+        
+        # Add quote placeholders based on quote_counts mapping
+        for section in self.content_sections:
+            section_title = section.title.text.strip()
+            # Try exact match first, then normalized match
+            quote_count = self.quote_counts.get(section_title, 0)
+            if quote_count == 0:
+                # Try case-insensitive match
+                for title, count in self.quote_counts.items():
+                    if title.lower() == section_title.lower():
+                        quote_count = count
+                        break
+            
+            if quote_count > 0:
+                section.add_quote_placeholders(quote_count)
+                logger.info(f"Added {quote_count} quote placeholders to section '{section_title[:30]}...'")
         
         total_blocks = sum(
             1 + len(s.body_blocks) for s in self.content_sections
