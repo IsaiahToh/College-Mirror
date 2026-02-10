@@ -1,5 +1,5 @@
 # An application to make client design work easier
-# IDML Layout Engine
+# IDML Layout Engine, for Adobe InDesign
 
 A production-grade, deterministic layout generation system for Adobe InDesign IDML files.
 
